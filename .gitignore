@@ -350,6 +350,7 @@ MigrationBackup/
 .ionide/
 
 
+App.config
 VideoLib/
 opus.dll
 libsodium.dll

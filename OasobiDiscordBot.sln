@@ -19,11 +19,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{9E6F58EA-DCF9-487D-BD5A-AE0F4C88D60A}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		change.txt = change.txt
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoLib", "VideoLib\VideoLib.csproj", "{98A8278D-CED3-4133-9405-B2E57564130D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +50,6 @@ Global
 		{1F2C97B3-1F94-4A19-B086-BC1107908F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F2C97B3-1F94-4A19-B086-BC1107908F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F2C97B3-1F94-4A19-B086-BC1107908F92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{98A8278D-CED3-4133-9405-B2E57564130D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{98A8278D-CED3-4133-9405-B2E57564130D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{98A8278D-CED3-4133-9405-B2E57564130D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{98A8278D-CED3-4133-9405-B2E57564130D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
