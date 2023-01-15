@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>Application</Title>
+    <Version>0.0.1</Version>
+    <Authors>Archangel913,AutumnSky1010</Authors>
+    <Copyright>Copyright ©2022 Archangel913,AutumnSky1010</Copyright>
+    <PackageProjectUrl>https://github.com/archangel913/OasobiDiscordBot/wiki</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/archangel913/OasobiDiscordBot</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Musics\Queue\Note.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Musics\Queue\NewFile1.txt" />
+    <None Remove="Musics\Queue\NewFile2.txt" />
+    <None Remove="Musics\Queue\NewFile3.txt" />
+    <None Remove="Settings\NewFile1.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+</Project>

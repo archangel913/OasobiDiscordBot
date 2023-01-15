@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "UI\UI.csproj", "{BCC8F27C-6880-4553-BE4E-61E14EC0857D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5F65BEFD-14E8-4FE2-A812-A382E499F0E8} = {5F65BEFD-14E8-4FE2-A812-A382E499F0E8}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{5F65BEFD-14E8-4FE2-A812-A382E499F0E8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{EB3823EC-9FBB-4426-AA46-36EF823B66AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{A339EBC4-2CF7-4C49-820A-1BE6EEDED61E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OasobiDiscordBot", "OasobiDiscordBot\OasobiDiscordBot.csproj", "{1F2C97B3-1F94-4A19-B086-BC1107908F92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{9E6F58EA-DCF9-487D-BD5A-AE0F4C88D60A}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoLib", "VideoLib\VideoLib.csproj", "{98A8278D-CED3-4133-9405-B2E57564130D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BCC8F27C-6880-4553-BE4E-61E14EC0857D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCC8F27C-6880-4553-BE4E-61E14EC0857D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCC8F27C-6880-4553-BE4E-61E14EC0857D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCC8F27C-6880-4553-BE4E-61E14EC0857D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F65BEFD-14E8-4FE2-A812-A382E499F0E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F65BEFD-14E8-4FE2-A812-A382E499F0E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F65BEFD-14E8-4FE2-A812-A382E499F0E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F65BEFD-14E8-4FE2-A812-A382E499F0E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB3823EC-9FBB-4426-AA46-36EF823B66AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB3823EC-9FBB-4426-AA46-36EF823B66AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB3823EC-9FBB-4426-AA46-36EF823B66AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB3823EC-9FBB-4426-AA46-36EF823B66AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A339EBC4-2CF7-4C49-820A-1BE6EEDED61E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A339EBC4-2CF7-4C49-820A-1BE6EEDED61E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A339EBC4-2CF7-4C49-820A-1BE6EEDED61E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A339EBC4-2CF7-4C49-820A-1BE6EEDED61E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F2C97B3-1F94-4A19-B086-BC1107908F92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F2C97B3-1F94-4A19-B086-BC1107908F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F2C97B3-1F94-4A19-B086-BC1107908F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F2C97B3-1F94-4A19-B086-BC1107908F92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98A8278D-CED3-4133-9405-B2E57564130D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98A8278D-CED3-4133-9405-B2E57564130D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98A8278D-CED3-4133-9405-B2E57564130D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98A8278D-CED3-4133-9405-B2E57564130D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5857D073-4B66-411C-8F6D-DB454ACC628B}
+	EndGlobalSection
+EndGlobal

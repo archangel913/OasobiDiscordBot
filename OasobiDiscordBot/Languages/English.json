@@ -1,0 +1,33 @@
+{
+    "KeySentencePairs": {
+        "UI.Modules.MusicModule.MusicModule.Play.Wait": "Execute play Command. Please wait...",
+        "UI.Modules.MusicModule.MusicModule.Queue.SentQueue": "THE QUEUE",
+        "Application.Musics.Musics.Play.AddedMusics": "Added {0} musics below {1}.",
+        "Application.Musics.Musics.Exit.Exited": "Music player exited.",
+        "Application.Musics.Musics.Queue.QueueTitle": "Current playing queue",
+        "Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorTitle": "Error!",
+        "Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorMessage": "Please input page number greater than 0.",
+        "Application.Musics.Musics.GetNowMusicFieldBuilder.NotPlayingTitle": "Not playing!",
+        "Application.Musics.Musics.GetNowMusicFieldBuilder.NotPlayingMessage": "Please use `/play` before this command.",
+        "Application.Musics.Musics.GetNowMusicFieldBuilder.NowPlayingTitle": "Now Playing",
+        "Application.Musics.Musics.GetWaitingMusicFieldBuilder.TitleOfWaiting": "There is no waiting music.",
+        "Application.Musics.Musics.GetWaitingMusicFieldBuilder.TitleOfIsNoWaiting": "Waiting musics.",
+        "Application.Musics.Musics.GetWaitingMusicFieldBuilder.Doesn'tHave": "Page{0} doesn't have musics.",
+        "Application.Musics.Musics.GetWaitingMusicFieldBuilder.CurrentPageInfo": "\n\nThis page is {0}/{1}.",
+        "Application.Musics.Musics.Pause.Paused": "Paused.",
+        "Application.Musics.Musics.Pause.Unpaused": "Unpause.",
+        "Application.Musics.Musics.Skipped": "Skipped.",
+        "Application.Musics.Musics.CouldNotSkip": "Could not skip. Please wait for the music to play.",
+        "Application.Musics.Musics.ShuffleOn": "The queue is Shuffled",
+        "Application.Musics.Musics.ShuffleOff": "The queue isn't shuffled.",
+        "Application.Musics.Musics.Remove.Removed": "{0} was removed.",
+        "Application.Musics.Musics.Remove.CouldNotRemove": "Inputed index is out of range in queue",
+        "Application.Musics.Musics.SetVolume": "Added volume to {0}.",
+        "Application.Musics.Musics.SetDefaltVolume": "Set volume to default.",
+        "Application.Musics.Musics.InvalidVoiceChannelExecption": "This command is not executable. Please join voice channel that this bot is joining.\nTo join this bot to a voice channel, please type command \"play\" in a voice channel.",
+        "Application.Musics.Musics.InvalidYouTubeUrlExecption": "This URL is not YouTube URL.",
+        "Application.Musics.Queue.NormalMusicQueue.NormalMusicQueueName": "Normal",
+        "Application.Musics.Queue.QueueLoopMusicQueue.QueueLoopMusicQueueName": "QueueLoop",
+        "Application.Musics.Queue.OneSongLoopMusicQueue.OneSongLoopMusicQueueName": "OneSong"
+    }
+}
