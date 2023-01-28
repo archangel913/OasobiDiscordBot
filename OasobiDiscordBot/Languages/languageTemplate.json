@@ -1,6 +1,7 @@
 {
     "KeySentencePairs": {
         "UI.Modules.MusicModule.MusicModule.Play.Wait": "",
+        "UI.Modules.MusicModule.MusicModule.Exit.Wait": "",
         "UI.Modules.MusicModule.MusicModule.Queue.SentQueue": "",
         "Application.Musics.Musics.Play.AddedMusics": "",
         "Application.Musics.Musics.Exit.Exited": "",

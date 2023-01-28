@@ -19,7 +19,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目", "ソリューション項目", "{9E6F58EA-DCF9-487D-BD5A-AE0F4C88D60A}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		change.txt = change.txt
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection

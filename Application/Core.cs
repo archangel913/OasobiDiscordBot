@@ -63,10 +63,7 @@ namespace Application
 
         private async Task RegisterCommands()
         {
-            foreach (var guildId in Settings.GuildIds)
-            {
-                await this.InteractionService.RegisterCommandsToGuildAsync(guildId.Value);
-            }
+            await this.InteractionService.RegisterCommandsGloballyAsync();
         }
 
         private async Task LoadCommandsAsync() =>

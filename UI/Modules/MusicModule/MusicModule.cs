@@ -30,8 +30,9 @@ namespace UI.Modules.MusicModule
         {
             try
             {
+                await this.RespondAsync(Musics.Language["UI.Modules.MusicModule.MusicModule.Exit.Wait"]);
                 string msg = Musics.Exit(((SocketGuildUser)Context.User).VoiceChannel);
-                await this.RespondAsync(msg);
+                await this.ReplyAsync(msg);
             }
             catch (Exception e)
             {
