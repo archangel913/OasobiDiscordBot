@@ -10,13 +10,21 @@ Not supported play from local files.
 
 ## Commands
 play : Play the music/play list.
+
 exit : Exit from the voice channel.
+
 queue : View the queue.
+
 pause : Stop music temporally.
+
 skip : Skip playing music.
+
 remove : Remove waiting music in queue.
+
 shuffle : Shuffle the queue.
+
 loop : Change loop settings.(normal, queue loop, single loop)
+
 volume : Change volume.
 
 [Demonstration movie(Japanese)](https://youtu.be/Xrl6I_8ZZJo)
