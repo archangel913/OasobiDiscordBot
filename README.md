@@ -4,7 +4,8 @@ Multi-function bot of discord for our server.
 
 In version 0.0.1, music player feature is implemented.
 
-##music player
+## music player
+
 ### Supported sources
 * YouTube
 
