@@ -24,4 +24,4 @@ These version information will be added later.
 in preparation
 
 ## License
-OasobiDiscordBot is under the [MIT license] (LICENSE)
+OasobiDiscordBot is under the [MIT license] (/LICENSE)
