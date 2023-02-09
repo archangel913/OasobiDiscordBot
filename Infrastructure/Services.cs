@@ -4,12 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Discord;
 using Infrastructure.LocalFile;
 using Infrastructure.VideoLibrary;
+using Application.Settings;
 
 namespace Infrastructure
 {
     public class Services
     {
-        public void RegisterServices(IServiceCollection services)
+        public void RegisterServices(IServiceCollection services, BotSettings settings)
         {
             services.AddTransient<IDiscordConnecter, Connecter>();
             services.AddTransient<IFileReader,FileReader>();
@@ -18,7 +19,10 @@ namespace Infrastructure
             services.AddTransient<IVideoLib, VideoLib>();
             services.AddTransient<IFileWriter, FileWriter>();
             services.AddSingleton<ISettingsReader, SettingsReader>();
-            services.AddSingleton<ILanguageRepository, LanguageRepository>();
+            services.AddSingleton<ILanguageRepository, LanguageRepository>(factory =>
+            {
+                return new LanguageRepository(settings);
+            });
         }
     }
 }

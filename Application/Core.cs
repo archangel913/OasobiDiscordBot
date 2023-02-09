@@ -23,14 +23,14 @@ namespace Application
         private IAssembleGetable AssembleGetter { get; }
         private bool IsVoiceChannelInit { get; set; } = false;
 
-        public Core()
+        public Core(BotSettings settings)
         {
             this.DiscordConnecter = Factory.GetService<IDiscordConnecter>();
             this.DiscordLogger = Factory.GetService<IDiscordLogger>();
             this.ConsoleReader = Factory.GetService<IConsoleReader>();
             this.AssembleGetter = Factory.GetService<IAssembleGetable>();
 
-            this.Settings = Factory.GetService<ISettingsReader>().GetSettings();
+            this.Settings = settings;
 
 
             Api.GetInstance().Setkey(this.Settings.YouTubeApiKey);

@@ -1,6 +1,11 @@
 ﻿using Application;
+using Infrastructure.LocalFile;
 using Domain.Factory;
 using Microsoft.Extensions.DependencyInjection;
+using Application.Settings;
+using Application.Interface;
+using Newtonsoft.Json.Linq;
+using System.Runtime.CompilerServices;
 
 namespace OasobiDiscordBot
 {
@@ -149,8 +154,9 @@ namespace OasobiDiscordBot
         {
             try
             {
-                Init();
-                await new Core().CoreAsync();
+                var settings = GetSettigs();
+                Init(settings);
+                await new Core(settings).CoreAsync();
             }
             catch(Exception e)
             {
@@ -160,12 +166,27 @@ namespace OasobiDiscordBot
             return 0;
         }
 
-        private static void Init()
+        private static void Init(BotSettings settings)
         {
             IServiceCollection service = new ServiceCollection();
             new UI.Services().RegisterServices(service);
-            new Infrastructure.Services().RegisterServices(service);
+            new Infrastructure.Services().RegisterServices(service, settings);
             Factory.SetService(service);
+        }
+
+        private static BotSettings GetSettigs()
+        {
+            var reader = new SettingsReader();
+            if (reader.TryGetSettings(out BotSettings botSettings))
+            {
+                return botSettings;
+            }
+            if (reader.TryGetExperimentalSettings(out botSettings))
+            {
+                return botSettings;
+            }
+            throw new FileNotFoundException("could not found the 'App.config'.");
+
         }
     }
 }
