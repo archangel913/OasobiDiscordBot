@@ -3,9 +3,10 @@ using Infrastructure.LocalFile;
 using Domain.Factory;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Settings;
-using Application.Interface;
+using Infrastructure.Discord;
 using Newtonsoft.Json.Linq;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace OasobiDiscordBot
 {
@@ -156,7 +157,9 @@ namespace OasobiDiscordBot
             {
                 var settings = GetSettigs();
                 Init(settings);
-                await new Core(settings).CoreAsync();
+                var bot = new BotClient(settings);
+                await bot.SetModulesAsync(AppDomain.CurrentDomain.GetAssemblies());
+                await bot.StartAsync();
             }
             catch(Exception e)
             {
