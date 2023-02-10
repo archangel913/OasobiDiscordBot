@@ -3,11 +3,18 @@ using Discord.WebSocket;
 using Discord.Interactions;
 using Domain.Interface;
 using Application.Interface;
-using Domain.Factory;
+using Infrastructure.LocalFile;
 
-namespace UI.BotConsole;
+namespace Infrastructure.Loggings;
 internal class DiscordLogger : IDiscordLogger
 {
+    public DiscordLogger(FileWriter fileWriter)
+    {
+        this.FileWriter = fileWriter;
+    }
+
+    private FileWriter FileWriter { get; }
+
     public void Register(DiscordSocketClient client, InteractionService interactionService)
     {
         interactionService.SlashCommandExecuted += ShowCommandExecutedLog;
@@ -29,7 +36,7 @@ internal class DiscordLogger : IDiscordLogger
         return Task.CompletedTask;
     }
 
-    public void WriteBotSystemLog(string message,ConsoleColor color = ConsoleColor.Cyan)
+    public void WriteBotSystemLog(string message, ConsoleColor color = ConsoleColor.Cyan)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.Write("【BotSystem】");
@@ -94,6 +101,6 @@ internal class DiscordLogger : IDiscordLogger
 
     private void WriteLogFile(string text)
     {
-        Factory.GetService<IFileWriter>().WriteLogFile(@"Log/currentLog.txt", text);
+        this.FileWriter.WriteLogFile(@"Log/currentLog.txt", text);
     }
 }

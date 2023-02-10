@@ -4,14 +4,14 @@ using Application.Interface;
 using Application.Languages;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using Application.Settings;
+
 namespace Infrastructure.LocalFile
 {
     public class LanguageRepository : ILanguageRepository
     {
-        public LanguageRepository()
+        public LanguageRepository(BotSettings settings)
         {
-            var settings = new SettingsReader().GetSettings();
-
             if (!Directory.Exists(this.LangDirectoryPath))
             {
                 Directory.CreateDirectory(this.LangDirectoryPath);

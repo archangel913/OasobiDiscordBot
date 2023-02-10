@@ -4,6 +4,6 @@ namespace Application.Interface
 {
     public interface ISettingsReader
     {
-        public BotSettings GetSettings();
+        public bool TryGetSettings(out BotSettings result);
     }
 }

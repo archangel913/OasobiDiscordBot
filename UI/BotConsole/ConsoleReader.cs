@@ -1,11 +1,10 @@
-﻿using Domain.Factory;
-using Application.Interface;
+﻿using Application.Interface;
 
 namespace UI.BotConsole
 {
     internal class ConsoleReader : IConsoleReader
     {
-        public void ActiveConsole()
+        public void ActiveConsole(IDiscordConnecter discordConnecter)
         {
             string? commandString;
             bool isExit = false;
@@ -23,7 +22,7 @@ namespace UI.BotConsole
                 }
                 else if(commandString == "reconnect")
                 {
-                    Factory.GetService<IDiscordConnecter>().Reconnect();
+                    discordConnecter.Reconnect();
                 }
                 else
                 {

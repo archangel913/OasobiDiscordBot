@@ -1,20 +1,30 @@
 ﻿using System.Text;
 using Discord;
 using Domain.Musics;
-using Domain.Factory;
 using Application.Interface;
 using Application.Languages;
 using Domain.Musics.Queue;
 using Application.Musics.Queue;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Application.Musics
 {
     public class Musics
     {
-        public readonly static LanguageDictionary Language = Factory.GetService<ILanguageRepository>().Find();
+        public Musics(IServiceProvider services)
+        {
+            this.Language = services.GetRequiredService<ILanguageRepository>().Find();
+            this.QueueStateFactories = new(
+                new OneSongLoopMusicQueueFactory(this.Language),
+                new QueueLoopMusicQueueFactory(this.Language),
+                new NormalMusicQueueFactory(this.Language));
+        }
 
-        private static QueueStateFactories QueueStateFactories { get; } = new(new OneSongLoopMusicQueueFactory(), new QueueLoopMusicQueueFactory(), new NormalMusicQueueFactory());
+        public LanguageDictionary Language { get; }
 
-        public static async Task<string> Play(IVoiceChannel voiceChannel, string url)
+        private QueueStateFactories QueueStateFactories { get; }
+
+        public async Task<string> Play(IVoiceChannel voiceChannel, string url)
         {
             try
             {
@@ -42,7 +52,7 @@ namespace Application.Musics
             }
         }
 
-        public static string Exit(IVoiceChannel voiceChannel)
+        public string Exit(IVoiceChannel voiceChannel)
         {
             try
             {
@@ -63,7 +73,7 @@ namespace Application.Musics
             }
         }
 
-        public static EmbedBuilder Queue(int page, IVoiceChannel voiceChannel)
+        public EmbedBuilder Queue(int page, IVoiceChannel voiceChannel)
         {
             try
             {
@@ -100,7 +110,7 @@ namespace Application.Musics
             }
         }
 
-        private static EmbedFieldBuilder GetNowMusicFieldBuilder(int page, MusicPlayer musicPlayer)
+        private EmbedFieldBuilder GetNowMusicFieldBuilder(int page, MusicPlayer musicPlayer)
         {
             var nowNullable = musicPlayer.GetNow();
             var nowMusicFieldBuilder = new EmbedFieldBuilder();
@@ -122,7 +132,7 @@ namespace Application.Musics
             return nowMusicFieldBuilder;
         }
 
-        private static EmbedFieldBuilder GetWaitingMusicFieldBuilder(int page, MusicPlayer musicPlayer)
+        private EmbedFieldBuilder GetWaitingMusicFieldBuilder(int page, MusicPlayer musicPlayer)
         {
             var waitingMusicsBuilder = new EmbedFieldBuilder();
             var queue = musicPlayer.GetQueue();
@@ -152,7 +162,7 @@ namespace Application.Musics
             return waitingMusicsBuilder;
         }
 
-        private static int GetPagesCount(IReadOnlyList<Music> queue)
+        private int GetPagesCount(IReadOnlyList<Music> queue)
         {
             int count = queue.Count / 10;
             // 10で割り切れなかった用にページを一枚増やす。
@@ -160,7 +170,7 @@ namespace Application.Musics
             return count;
         }
 
-        public static string Pause(IVoiceChannel voiceChannel)
+        public string Pause(IVoiceChannel voiceChannel)
         {
             try
             {
@@ -181,7 +191,7 @@ namespace Application.Musics
             }
         }
 
-        public static string Skip(IVoiceChannel voiceChannel)
+        public string Skip(IVoiceChannel voiceChannel)
         {
             try
             {
@@ -206,7 +216,7 @@ namespace Application.Musics
             }
         }
 
-        public static string Shuffle(IVoiceChannel voiceChannel)
+        public string Shuffle(IVoiceChannel voiceChannel)
         {
             try
             {
@@ -227,7 +237,7 @@ namespace Application.Musics
             }
         }
 
-        public static string Loop(IVoiceChannel voiceChannel)
+        public string Loop(IVoiceChannel voiceChannel)
         {
             try
             {
@@ -248,7 +258,7 @@ namespace Application.Musics
             }
         }
 
-        public static string Remove(IVoiceChannel voiceChannel, int index)
+        public string Remove(IVoiceChannel voiceChannel, int index)
         {
             try
             {
@@ -272,7 +282,7 @@ namespace Application.Musics
             }
         }
 
-        public static string Volume(IVoiceChannel voiceChannel, double volume)
+        public string Volume(IVoiceChannel voiceChannel, double volume)
         {
             try
             {

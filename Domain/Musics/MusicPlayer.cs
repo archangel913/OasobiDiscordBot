@@ -1,21 +1,29 @@
 ﻿using Discord;
 using Domain.Interface;
 using Domain.Musics.Queue;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 
 namespace Domain.Musics
 {
     public class MusicPlayer
     {
+        public MusicPlayer(IServiceProvider services)
+        {
+            this.AudioSender = services.GetRequiredService<IAudioSender>();
+            this.VideoLib = services.GetRequiredService<IVideoLib>();
+            this.Logger = services.GetRequiredService<IDiscordLogger>();
+        }
+
         private IVoiceChannel Voicechannel { get; set; }
 
-        private IAudioSender AudioSender { get; } = Factory.Factory.GetService<IAudioSender>();
+        private IAudioSender AudioSender { get; }
 
         public MusicQueue MusicQueue { get; private set; }
 
-        private IVideoLib VideoLib { get; } = Factory.Factory.GetService<IVideoLib>();
+        private IVideoLib VideoLib { get; }
 
-        private IDiscordLogger Logger { get; } = Factory.Factory.GetService<IDiscordLogger>();
+        private IDiscordLogger Logger { get; }
 
         private IGetMusic MusicGetter { get; } = Factory.Factory.GetService<IGetMusic>();
 

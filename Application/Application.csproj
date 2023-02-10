@@ -27,6 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="3.8.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 

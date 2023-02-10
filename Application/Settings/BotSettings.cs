@@ -1,5 +1,4 @@
 ﻿using Application.Interface;
-using Domain.Factory;
 
 namespace Application.Settings
 {

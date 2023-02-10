@@ -1,6 +1,12 @@
 ﻿using Application;
-using Domain.Factory;
+using Infrastructure.LocalFile;
 using Microsoft.Extensions.DependencyInjection;
+using Application.Settings;
+using Infrastructure.Discord;
+using Newtonsoft.Json.Linq;
+using System.Runtime.CompilerServices;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace OasobiDiscordBot
 {
@@ -149,8 +155,11 @@ namespace OasobiDiscordBot
         {
             try
             {
-                Init();
-                await new Core().CoreAsync();
+                var settings = GetSettigs();
+                var services = InjectionServices(settings);
+                var bot = new BotClient(settings, services);
+                await bot.SetModulesAsync(AppDomain.CurrentDomain.GetAssemblies());
+                await bot.StartAsync();
             }
             catch(Exception e)
             {
@@ -160,12 +169,27 @@ namespace OasobiDiscordBot
             return 0;
         }
 
-        private static void Init()
+        private static IServiceCollection InjectionServices(BotSettings settings)
         {
-            IServiceCollection service = new ServiceCollection();
-            new UI.Services().RegisterServices(service);
-            new Infrastructure.Services().RegisterServices(service);
-            Factory.SetService(service);
+            var services = new ServiceCollection();
+            new UI.Services().RegisterServices(services);
+            new Infrastructure.Services().RegisterServices(services, settings);
+            return services;
+        }
+
+        private static BotSettings GetSettigs()
+        {
+            var reader = new SettingsReader();
+            if (reader.TryGetSettings(out BotSettings botSettings))
+            {
+                return botSettings;
+            }
+            if (reader.TryGetExperimentalSettings(out botSettings))
+            {
+                return botSettings;
+            }
+            throw new FileNotFoundException("could not found the 'App.config'.");
+
         }
     }
 }
