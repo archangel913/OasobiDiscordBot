@@ -147,6 +147,8 @@ namespace UI.Modules.MusicModule
             }
         }
 
+
+
         public Assembly? GetAssembly()
         {
             return Assembly.GetAssembly(typeof(MusicModule));

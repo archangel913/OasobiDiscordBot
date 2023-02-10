@@ -18,7 +18,6 @@ namespace Infrastructure.LocalFile
                 Version = this.CreateVersion(),
                 BotLanguage = this.GetAppConfig("BotLanguage"),
                 DiscordToken = this.GetAppConfig("DiscordToken"),
-                YouTubeApiKey = this.GetAppConfig("YouTubeApiKey"),
                 GuildIds = guildIds
             };
             return settings;

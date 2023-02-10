@@ -9,16 +9,10 @@ namespace Infrastructure.Http
 {
     internal class Http : IHttp
     {
-        private readonly HttpClient HttpClient;
-
-        public Http()
-        {
-            this.HttpClient = new HttpClient();
-        }
-
         public async Task<HttpResponseMessage> GetAsync(string request)
         {
-            return await this.HttpClient.GetAsync(request);
+            using var client = new HttpClient();
+            return await client.GetAsync(request);
         }
     }
 }
