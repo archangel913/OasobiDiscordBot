@@ -2,6 +2,6 @@
 {
     public interface IConsoleReader
     {
-        public abstract void ActiveConsole();
+        public abstract void ActiveConsole(IDiscordConnecter discordConnecter);
     }
 }

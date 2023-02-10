@@ -1,12 +1,12 @@
 ﻿using Application;
 using Infrastructure.LocalFile;
-using Domain.Factory;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Settings;
 using Infrastructure.Discord;
 using Newtonsoft.Json.Linq;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace OasobiDiscordBot
 {
@@ -156,8 +156,8 @@ namespace OasobiDiscordBot
             try
             {
                 var settings = GetSettigs();
-                Init(settings);
-                var bot = new BotClient(settings);
+                var services = InjectionServices(settings);
+                var bot = new BotClient(settings, services);
                 await bot.SetModulesAsync(AppDomain.CurrentDomain.GetAssemblies());
                 await bot.StartAsync();
             }
@@ -169,12 +169,12 @@ namespace OasobiDiscordBot
             return 0;
         }
 
-        private static void Init(BotSettings settings)
+        private static IServiceCollection InjectionServices(BotSettings settings)
         {
-            IServiceCollection service = new ServiceCollection();
-            new UI.Services().RegisterServices(service);
-            new Infrastructure.Services().RegisterServices(service, settings);
-            Factory.SetService(service);
+            var services = new ServiceCollection();
+            new UI.Services().RegisterServices(services);
+            new Infrastructure.Services().RegisterServices(services, settings);
+            return services;
         }
 
         private static BotSettings GetSettigs()

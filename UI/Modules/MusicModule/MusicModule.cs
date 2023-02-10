@@ -6,8 +6,15 @@ using Discord.WebSocket;
 
 namespace UI.Modules.MusicModule
 {
-    public class MusicModule : InteractionModuleBase, IAssembleGetable
+    public class MusicModule : ModuleBase, IAssembleGetable
     {
+        public MusicModule(IServiceProvider services) : base(services)
+        {
+            this.Musics = new Musics(services);
+        }
+
+        private Musics Musics { get; }
+
         [SlashCommand("play", "Play the music/play list.")]
         public async Task Play(string url)
         {

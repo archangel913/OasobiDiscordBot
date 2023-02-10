@@ -59,9 +59,11 @@ namespace Domain.YouTube
 
         private async Task<JObject?> ExecuteHttpRequestAsync(string request)
         {
+            /*
             var http = Factory.Factory.GetService<IHttp>();
             var response = await http.GetAsync(request);
-            var json = await response.Content.ReadAsStringAsync();
+            */
+            var json = "";
             return JObject.Parse(json);
         }
     }

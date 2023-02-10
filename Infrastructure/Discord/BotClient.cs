@@ -3,16 +3,10 @@ using Application.Settings;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Discord;
-using Domain.Factory;
 using Domain.Interface;
 using Domain.Musics;
 using Domain.YouTube;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace Infrastructure.Discord;
@@ -27,10 +21,8 @@ public class BotClient
     private IConsoleReader ConsoleReader { get; }
     private bool IsVoiceChannelInit { get; set; } = false;
 
-    public BotClient(BotSettings settings)
+    public BotClient(BotSettings settings, IServiceCollection services)
     {
-        this.DiscordLogger = Factory.GetService<IDiscordLogger>();
-        this.ConsoleReader = Factory.GetService<IConsoleReader>();
         this.DiscordConnecter = new Connecter();
         this.Settings = settings;
 
@@ -42,7 +34,9 @@ public class BotClient
             LogLevel = LogSeverity.Info,
         };
         this.Client = new DiscordSocketClient(socketConfig);
-        this.Provider = new ServiceCollection().BuildServiceProvider();
+        this.Provider = services.BuildServiceProvider();
+        this.DiscordLogger = this.Provider.GetRequiredService<IDiscordLogger>();
+        this.ConsoleReader = this.Provider.GetRequiredService<IConsoleReader>();
         this.InteractionService = new InteractionService(Client.Rest);
     }
 
@@ -56,7 +50,7 @@ public class BotClient
         this.Client.Ready += VoiceChannelUpdate;
         this.DiscordLogger.Register(this.Client, this.InteractionService);
         await DiscordConnecter.ConnectAsync(this.Client, Settings.DiscordToken);
-        this.ConsoleReader.ActiveConsole();
+        this.ConsoleReader.ActiveConsole(this.DiscordConnecter);
         await DiscordConnecter.DisconnectAsync(this.Client);
         await Task.Delay(1000);
         this.Client.Dispose();

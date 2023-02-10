@@ -12,9 +12,6 @@ namespace UI
         public void RegisterServices(IServiceCollection services)
         {
             services.AddTransient<IConsoleReader, ConsoleReader>();
-            services.AddTransient<IDiscordLogger, DiscordLogger>();
-            services.AddTransient<IAssembleGetable, ExperimentalModules>();
-            services.AddTransient<IAssembleGetable, MusicModule>();
         }
     }
 }

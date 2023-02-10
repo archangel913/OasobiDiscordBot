@@ -5,6 +5,7 @@ using Infrastructure.Discord;
 using Infrastructure.LocalFile;
 using Infrastructure.VideoLibrary;
 using Application.Settings;
+using Infrastructure.Loggings;
 
 namespace Infrastructure
 {
@@ -17,12 +18,14 @@ namespace Infrastructure
             services.AddTransient<IAudioSender, AudioSender>();
             services.AddTransient<IHttp, Http.Http>();
             services.AddTransient<IVideoLib, VideoLib>();
-            services.AddTransient<IFileWriter, FileWriter>();
             services.AddSingleton<ISettingsReader, SettingsReader>();
             services.AddSingleton<ILanguageRepository, LanguageRepository>(factory =>
             {
                 return new LanguageRepository(settings);
             });
+            var fileWriter = new FileWriter();
+            services.AddTransient<IFileWriter, FileWriter>(value => fileWriter);
+            services.AddSingleton<IDiscordLogger, DiscordLogger>(value => new DiscordLogger(fileWriter));
         }
     }
 }
