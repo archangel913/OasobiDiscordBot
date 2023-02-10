@@ -1,14 +1,17 @@
-# OasobiDiscordBot (music player features)
+# OasobiDiscordBot
 ## Overview
 Multi-function bot of discord for our server.
-This version mainly includes a music playback function.
 
-## Supported sources
+In version 0.0.1, music player feature is implemented.
+
+## music player
+
+### Supported sources
 * YouTube
 
 Not supported play from local files.
 
-## Commands
+### Commands
 play : Play the music/play list.
 
 exit : Exit from the voice channel.
@@ -29,23 +32,23 @@ volume : Change volume.
 
 [Demonstration movie(Japanese)](https://youtu.be/Xrl6I_8ZZJo)
 
-## Requirement
+### Requirement
 .NET 6.0
 
-### Dll file
+#### Dll file
 * libsodium.dll
 * libopus.dll
 
 download from [Voice binaries](https://github.com/discord-net/Discord.Net/blob/dev/voice-natives/vnext_natives_win32_x64.zip)
 
-### Third party program
+#### Third party program
 * FFmpeg (5.1.2-full_build)
 
 [ffmpeg](https://www.gyan.dev/ffmpeg/builds/)
 
 add ffmpeg.exe to the environment path.
 
-### Others
+#### Others
 * Bot token
 
 [Discord Bot documents](https://discord.com/developers/docs/intro)
@@ -54,7 +57,7 @@ add ffmpeg.exe to the environment path.
 
 [YouTube api documents](https://developers.google.com/youtube/v3/getting-started)
 
-## SetUp
+### SetUp
 1. Clone this code for your local folder.
 2. Open the solution by Visual Studio 2022.
 3. Specify OasobiDiscordBot as the startup project.

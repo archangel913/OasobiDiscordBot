@@ -17,6 +17,8 @@ namespace Domain.Musics
 
         private IDiscordLogger Logger { get; } = Factory.Factory.GetService<IDiscordLogger>();
 
+        private IGetMusic MusicGetter { get; } = Factory.Factory.GetService<IGetMusic>();
+
         private Task? PlayTask { get; set; }
 
         private bool CanLoad { get; set; } = false;
@@ -168,7 +170,7 @@ namespace Domain.Musics
 
         public async Task<List<Music>> Add(string url)
         {
-            var musicList = await new MakeMusicList(url).GetMusicsAsync();
+            var musicList = await this.MusicGetter.GetMusicsAsync(url);
             for (int i = 0; i < musicList.Count; i++)
             {
                 this.MusicQueue.Enqueue(musicList[i]);

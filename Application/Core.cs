@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Application.Settings;
 using Discord.Interactions;
 using Domain.Factory;
-using Domain.YouTube;
 using Discord;
 using Domain.Musics;
 
@@ -32,8 +31,6 @@ namespace Application
 
             this.Settings = Factory.GetService<ISettingsReader>().GetSettings();
 
-
-            Api.GetInstance().Setkey(this.Settings.YouTubeApiKey);
 
             var socketConfig = new DiscordSocketConfig()
             {

@@ -4,9 +4,9 @@ using Domain.Interface;
 using System;
 using System.IO;
 
-namespace Infrastructure.VideoLibrary
+namespace Infrastructure.Videos
 {
-    internal class VideoLib : IVideoLib
+    internal class Video : IVideoLib
     {
         public string GetYoutubeVideoUri(string url)
         {
