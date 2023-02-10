@@ -25,7 +25,6 @@ namespace Infrastructure.LocalFile
             canRead &= this.TryReadConfig("BotName", out string name);
             canRead &= this.TryReadConfig("BotLanguage", out string language);
             canRead &= this.TryReadConfig("DiscordToken", out string token);
-            canRead &= this.TryReadConfig("YouTubeApiKey", out string youtubeApiKey);
             canRead &= this.TryReadConfig("BotVersion", out string version);
             if (!canRead)
             {
@@ -38,7 +37,6 @@ namespace Infrastructure.LocalFile
                 Version = new Version(version),
                 BotLanguage = language,
                 DiscordToken = token,
-                YouTubeApiKey = youtubeApiKey,
                 GuildIds = guildIds
             };
             return true;
@@ -47,9 +45,7 @@ namespace Infrastructure.LocalFile
         public bool TryGetExperimentalSettings(out BotSettings botSettings)
         {
             string? discordToken = Environment.GetEnvironmentVariable("EXPERIMENTAL_DISCORD_BOT_TOKEN");
-            string? youtubeKey = Environment.GetEnvironmentVariable("EXPERIMENTAL_YOUTUBE_API_KEY");
-            if (discordToken is null ||
-                youtubeKey is null) 
+            if (discordToken is null) 
             {
                 botSettings = new BotSettings();
                 return false;
@@ -60,7 +56,6 @@ namespace Infrastructure.LocalFile
                 Version = new Version("0.0.0"),
                 BotLanguage = "English",
                 DiscordToken = discordToken,
-                YouTubeApiKey = youtubeKey,
                 GuildIds = new List<GuildId>() { new GuildId(0) }
             };
             return true;

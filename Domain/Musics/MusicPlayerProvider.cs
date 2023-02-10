@@ -8,7 +8,7 @@ namespace Domain.Musics
     {
         private static readonly List<MusicPlayer> MusicPlayerList = new();
 
-        public static MusicPlayer GetMusicPlayer(IVoiceChannel voiceChannel, QueueStateFactories factories)
+        public static MusicPlayer GetMusicPlayer(IServiceProvider services, IVoiceChannel voiceChannel, QueueStateFactories factories)
         {
             bool isExist = false;
             if (voiceChannel is null) throw new ArgumentException("IVoiceChannel is null");
@@ -22,7 +22,7 @@ namespace Domain.Musics
                 }
             }
             if (isExist) throw new ArgumentException("voiceChannel is invalid");
-            var newMusicPlayer = new MusicPlayer(voiceChannel, factories);
+            var newMusicPlayer = new MusicPlayer(services, voiceChannel, factories);
             MusicPlayerList.Add(newMusicPlayer);
             //logger.WriteBotSystemLog("Generate MusicPlayer  guild : " + newMusicPlayer.GuildName + "  channel : " + newMusicPlayer.ChannelName);
             return newMusicPlayer;

@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using Discord;
 using Domain.Interface;
 using Domain.Musics;
-using Domain.YouTube;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -25,9 +24,6 @@ public class BotClient
     {
         this.DiscordConnecter = new Connecter();
         this.Settings = settings;
-
-
-        Api.GetInstance().Setkey(this.Settings.YouTubeApiKey);
 
         var socketConfig = new DiscordSocketConfig()
         {

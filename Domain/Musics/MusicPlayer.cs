@@ -8,13 +8,6 @@ namespace Domain.Musics
 {
     public class MusicPlayer
     {
-        public MusicPlayer(IServiceProvider services)
-        {
-            this.AudioSender = services.GetRequiredService<IAudioSender>();
-            this.VideoLib = services.GetRequiredService<IVideoLib>();
-            this.Logger = services.GetRequiredService<IDiscordLogger>();
-        }
-
         private IVoiceChannel Voicechannel { get; set; }
 
         private IAudioSender AudioSender { get; }
@@ -25,7 +18,7 @@ namespace Domain.Musics
 
         private IDiscordLogger Logger { get; }
 
-        private IGetMusic MusicGetter { get; } = Factory.Factory.GetService<IGetMusic>();
+        private IGetMusic MusicGetter { get; }
 
         private Task? PlayTask { get; set; }
 
@@ -47,8 +40,12 @@ namespace Domain.Musics
 
         public ulong VoiceChannelId { get; }
 
-        public MusicPlayer(IVoiceChannel voiceChannel, QueueStateFactories factories)
+        public MusicPlayer(IServiceProvider services, IVoiceChannel voiceChannel, QueueStateFactories factories)
         {
+            this.AudioSender = services.GetRequiredService<IAudioSender>();
+            this.VideoLib = services.GetRequiredService<IVideoLib>();
+            this.Logger = services.GetRequiredService<IDiscordLogger>();
+            this.MusicGetter = services.GetRequiredService<IGetMusic>();
             this.Voicechannel = voiceChannel;
             this.GuildName = voiceChannel.Guild.Name;
             this.ChannelName = voiceChannel.Name;

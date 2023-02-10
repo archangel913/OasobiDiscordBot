@@ -14,6 +14,7 @@ namespace Application.Musics
         public Musics(IServiceProvider services)
         {
             this.Language = services.GetRequiredService<ILanguageRepository>().Find();
+            this.Service = services;
             this.QueueStateFactories = new(
                 new OneSongLoopMusicQueueFactory(this.Language),
                 new QueueLoopMusicQueueFactory(this.Language),
@@ -24,12 +25,14 @@ namespace Application.Musics
 
         private QueueStateFactories QueueStateFactories { get; }
 
+        private IServiceProvider Service { get; }
+
         public async Task<string> Play(IVoiceChannel voiceChannel, string url)
         {
             try
             {
                 if (voiceChannel is null) throw new ArgumentException("IVoiceChannel is null");
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 await musicPlayer.ConnecetAsync();
                 var addMusicList = await musicPlayer.Add(url);
                 musicPlayer.Play();
@@ -56,7 +59,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 musicPlayer.Disconnect();
                 return Language["Application.Musics.Musics.Exit.Exited"];
             }
@@ -77,7 +80,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 var builder = new EmbedBuilder();
                 builder.WithColor(0x02B4C0);
                 builder.WithTitle(Language["Application.Musics.Musics.Queue.QueueTitle"]);
@@ -174,7 +177,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 bool pause = musicPlayer.SwitchPauseState();
                 return pause ? Language["Application.Musics.Musics.Pause.Paused"] : Language["Application.Musics.Musics.Pause.Unpaused"];
             }
@@ -195,7 +198,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 if (musicPlayer.CanSkip)
                 {
                     musicPlayer.Skip();
@@ -220,7 +223,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 bool isShuffled = musicPlayer.SwitchShuffleState();
                 return isShuffled ? Language["Application.Musics.Musics.ShuffleOn"] : Language["Application.Musics.Musics.ShuffleOff"];
             }
@@ -241,7 +244,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 musicPlayer.ChangeLoopState();
                 return musicPlayer.MusicQueue.State.ToString();
             }
@@ -262,7 +265,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 string deleteMusicName;
                 if (musicPlayer.TryRemoveAt(index - 1, out deleteMusicName))
                     return string.Format(Language["Application.Musics.Musics.Remove.Removed"], deleteMusicName);
@@ -286,7 +289,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 musicPlayer.SetVolume(volume);
                 if (volume != 0)
                     return string.Format(Language["Application.Musics.Musics.SetVolume"], volume);
