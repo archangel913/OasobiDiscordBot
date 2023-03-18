@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Domain.Interface;
 using Application.Interface;
-using UI.BotConsole;
-using UI.Modules.ExperimentalModules;
-using UI.Modules.MusicModule;
+using DiscordUI.BotConsole;
+using DiscordUI.Modules.ExperimentalModules;
+using DiscordUI.Modules.MusicModule;
 
-namespace UI
+namespace DiscordUI
 {
     public class Services
     {

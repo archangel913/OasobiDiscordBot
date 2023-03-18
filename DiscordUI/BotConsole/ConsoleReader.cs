@@ -1,6 +1,6 @@
 ﻿using Application.Interface;
 
-namespace UI.BotConsole
+namespace DiscordUI.BotConsole
 {
     internal class ConsoleReader : IConsoleReader
     {

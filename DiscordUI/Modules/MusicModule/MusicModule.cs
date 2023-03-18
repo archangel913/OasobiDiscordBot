@@ -4,7 +4,7 @@ using System.Reflection;
 using Application.Musics;
 using Discord.WebSocket;
 
-namespace UI.Modules.MusicModule
+namespace DiscordUI.Modules.MusicModule
 {
     public class MusicModule : ModuleBase, IAssembleGetable
     {
@@ -20,7 +20,7 @@ namespace UI.Modules.MusicModule
         {
             try
             {
-                await this.RespondAsync(Musics.Language["UI.Modules.MusicModule.MusicModule.Play.Wait"]);
+                await this.RespondAsync(Musics.Language["DiscordUI.Modules.MusicModule.MusicModule.Play.Wait"]);
                 string msg = await Musics.Play(((SocketGuildUser)Context.User).VoiceChannel, url);
                 await this.ReplyAsync(msg);
             }
@@ -37,7 +37,7 @@ namespace UI.Modules.MusicModule
         {
             try
             {
-                await this.RespondAsync(Musics.Language["UI.Modules.MusicModule.MusicModule.Exit.Wait"]);
+                await this.RespondAsync(Musics.Language["DiscordUI.Modules.MusicModule.MusicModule.Exit.Wait"]);
                 string msg = Musics.Exit(((SocketGuildUser)Context.User).VoiceChannel);
                 await this.ReplyAsync(msg);
             }
@@ -54,7 +54,7 @@ namespace UI.Modules.MusicModule
             try
             {
                 var builder = Musics.Queue(page, ((SocketGuildUser)Context.User).VoiceChannel);
-                await this.RespondAsync(Musics.Language["UI.Modules.MusicModule.MusicModule.Queue.SentQueue"], embed: builder.Build());
+                await this.RespondAsync(Musics.Language["DiscordUI.Modules.MusicModule.MusicModule.Queue.SentQueue"], embed: builder.Build());
             }
             catch (Exception e)
             {

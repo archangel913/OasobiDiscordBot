@@ -7,7 +7,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Domain.Interface;
 
-namespace UI.Modules.ExperimentalModules
+namespace DiscordUI.Modules.ExperimentalModules
 {
     public class ExperimentalModules : ModuleBase, IAssembleGetable
     {

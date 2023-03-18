@@ -3,10 +3,7 @@ using Infrastructure.LocalFile;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Settings;
 using Infrastructure.Discord;
-using Newtonsoft.Json.Linq;
-using System.Runtime.CompilerServices;
-using System.Reflection;
-using System.Text.RegularExpressions;
+using ClientUI;
 
 namespace OasobiDiscordBot
 {
@@ -151,7 +148,16 @@ namespace OasobiDiscordBot
 
     internal class StartBot
     {
-        public static async Task<int> Main()
+        [STAThread]
+        public static void Main()
+        {
+            Task.Run(() => RunDiscordBotAsync());
+            
+            var app = new App();
+            app.Start();
+        }
+
+        private static async Task<int> RunDiscordBotAsync()
         {
             try
             {
@@ -172,7 +178,7 @@ namespace OasobiDiscordBot
         private static IServiceCollection InjectionServices(BotSettings settings)
         {
             var services = new ServiceCollection();
-            new UI.Services().RegisterServices(services);
+            new DiscordUI.Services().RegisterServices(services);
             new Infrastructure.Services().RegisterServices(services, settings);
             return services;
         }
