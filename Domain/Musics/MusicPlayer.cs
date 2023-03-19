@@ -163,9 +163,9 @@ namespace Domain.Musics
             }
             catch (Exception e)
             {
-                this.Logger.WriteBotSystemLog(e.Message + "\n==========StackTrace==========\n" + e.StackTrace, ConsoleColor.Red);
+                this.Logger.WriteErrorLog(e.Message + "\n==========StackTrace==========\n" + e.StackTrace);
                 if (e.InnerException is not null)
-                    this.Logger.WriteBotSystemLog(e.InnerException.Message + "\n==========InnerException StackTrace==========\n" + e.InnerException.StackTrace, ConsoleColor.Red);
+                    this.Logger.WriteErrorLog(e.InnerException.Message + "\n==========InnerException StackTrace==========\n" + e.InnerException.StackTrace);
             }
             finally
             {

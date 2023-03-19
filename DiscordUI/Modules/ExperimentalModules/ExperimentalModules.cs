@@ -9,7 +9,7 @@ using Domain.Interface;
 
 namespace DiscordUI.Modules.ExperimentalModules
 {
-    public class ExperimentalModules : ModuleBase, IAssembleGetable
+    public class ExperimentalModules : ModuleBase
     {
         public ExperimentalModules(IServiceProvider services) : base(services)
         {
@@ -20,11 +20,6 @@ namespace DiscordUI.Modules.ExperimentalModules
         {
             var logger = this.Services.GetRequiredService<IDiscordLogger>();
             await this.RespondAsync(logger.ToString());
-        }
-
-        public Assembly? GetAssembly()
-        {
-            return Assembly.GetAssembly(typeof(ExperimentalModules));
         }
     }
 }

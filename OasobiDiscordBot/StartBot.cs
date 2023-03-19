@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Application.Settings;
 using Infrastructure.Discord;
 using ClientUI;
+using DiscordUI;
+using System.Reflection;
 
 namespace OasobiDiscordBot
 {
@@ -198,35 +200,20 @@ namespace OasobiDiscordBot
         [STAThread]
         public static void Main()
         {
-            Task.Run(() => RunDiscordBotAsync());
-            var app = new App();
+            var settings = GetSettigs();
+            var services = InjectionServices(settings);
+            var app = new App(services);
             app.Start();
         }
 
-        private static async Task<int> RunDiscordBotAsync()
-        {
-            try
-            {
-                var settings = GetSettigs();
-                var services = InjectionServices(settings);
-                var bot = new BotClient(settings, services);
-                await bot.SetModulesAsync(AppDomain.CurrentDomain.GetAssemblies());
-                await bot.StartAsync();
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e);
-                return -1;
-            }
-            return 0;
-        }
-
-        private static IServiceCollection InjectionServices(BotSettings settings)
+        private static IServiceProvider InjectionServices(BotSettings settings)
         {
             var services = new ServiceCollection();
-            new DiscordUI.Services().RegisterServices(services);
-            new Infrastructure.Services().RegisterServices(services, settings);
-            return services;
+            var modules = new List<Assembly>()
+            {
+                ModuleAssembly.Get()
+            };
+            return new Infrastructure.Services().RegisterServices(services, settings, modules);
         }
 
         private static BotSettings GetSettigs()

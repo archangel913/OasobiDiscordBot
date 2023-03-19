@@ -6,7 +6,7 @@ using Discord.WebSocket;
 
 namespace DiscordUI.Modules.MusicModule
 {
-    public class MusicModule : ModuleBase, IAssembleGetable
+    public class MusicModule : ModuleBase
     {
         public MusicModule(IServiceProvider services) : base(services)
         {
@@ -152,13 +152,6 @@ namespace DiscordUI.Modules.MusicModule
                 await this.ReplyAsync(e.Message);
                 throw;
             }
-        }
-
-
-
-        public Assembly? GetAssembly()
-        {
-            return Assembly.GetAssembly(typeof(MusicModule));
         }
     }
 }

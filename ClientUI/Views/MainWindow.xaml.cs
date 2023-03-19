@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Application.Bots;
+using ClientUI.ViewModels;
 
 namespace ClientUI.Views;
 /// <summary>
@@ -18,8 +20,10 @@ namespace ClientUI.Views;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(IServiceProvider serviceProvider)
     {
         InitializeComponent();
+        var vm = new MainWindowVM(serviceProvider, new LogPrinter(this));
+        this.DataContext = vm;
     }
 }

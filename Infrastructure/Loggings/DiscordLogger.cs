@@ -4,6 +4,7 @@ using Discord.Interactions;
 using Domain.Interface;
 using Application.Interface;
 using Infrastructure.LocalFile;
+using Application.Bots;
 
 namespace Infrastructure.Loggings;
 internal class DiscordLogger : IDiscordLogger
@@ -15,8 +16,11 @@ internal class DiscordLogger : IDiscordLogger
 
     private FileWriter FileWriter { get; }
 
-    public void Register(DiscordSocketClient client, InteractionService interactionService)
+    private ILogPrintable? Printable { get; set; }
+
+    public void Register(DiscordSocketClient client, InteractionService interactionService, ILogPrintable printable)
     {
+        this.Printable = printable;
         interactionService.SlashCommandExecuted += ShowCommandExecutedLog;
         client.Log += WriteBotSystemLog;
     }
@@ -28,23 +32,22 @@ internal class DiscordLogger : IDiscordLogger
     /// <returns>Task</returns>
     public Task WriteBotSystemLog(LogMessage message)
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write("【BotSystem】");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine($"{message}");
-        WriteLogFile("【BotSystem】" + $"{message}");
+        if (this.Printable is not null)
+        {
+            this.Printable.PrintSystemLog("【BotSystem】", $"{message}");
+        }
+        WriteLogFile($"【BotSystem】 {message}");
         return Task.CompletedTask;
     }
 
-    public void WriteBotSystemLog(string message, ConsoleColor color = ConsoleColor.Cyan)
+    public void WriteBotSystemLog(string message)
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write("【BotSystem】");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write($"{DateTime.Now.ToString("HH:mm:ss")} ");
-        Console.ForegroundColor = color;
-        Console.WriteLine($"{message}");
-        WriteLogFile("【BotSystem】" + $"{DateTime.Now.ToString("HH:mm:ss")} " + $"{message}");
+        var now = DateTime.Now.ToString("HH:mm:ss");
+        if (this.Printable is not null)
+        {
+            this.Printable.PrintSystemLog($"【BotSystem】", $"{now}{message}");
+        }
+        WriteLogFile($"【BotSystem】 {now} {message}");
     }
 
     /// <summary>
@@ -53,31 +56,22 @@ internal class DiscordLogger : IDiscordLogger
     /// <returns>Task</returns>
     public async Task ShowCommandExecutedLog(SlashCommandInfo commandInfo, IInteractionContext context, IResult result)
     {
-        await WriteCommandPerformer(context);
+        string performer = await GetCommandPerformer(context);
         if (result.IsSuccess)
         {
-            WriteSuccessLog(commandInfo);
+            WriteSuccessLog(commandInfo, performer);
             return;
         }
-        WriteErrorLog(result);
+        WriteErrorLog(result, performer);
     }
-    private async Task WriteCommandPerformer(IInteractionContext context)
+    private async Task<string> GetCommandPerformer(IInteractionContext context)
     {
         IGuildUser user = await context.Guild.GetUserAsync(context.User.Id);
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write($"【<{context.Guild.Name}>{context.Channel.Name}】");
-        Console.ForegroundColor = ConsoleColor.Gray;
-        Console.WriteLine($"{DateTime.Now}");
-        Console.ForegroundColor = ConsoleColor.Yellow;
         string nickName = user.Nickname ?? "ニックネーム無し";
-        Console.Write($"<{user.Username}({nickName})>");
-        WriteLogFile($"【<{context.Guild.Name}>{context.Channel.Name}】" + $"{DateTime.Now}" + $"<{user.Username}({nickName})>");
+        return $"【<{context.Guild.Name}>{context.Channel.Name}】{DateTime.Now}<{user.Username}({nickName})>";
     }
-    private void WriteErrorLog(IResult result)
+    private void WriteErrorLog(IResult result, string performer)
     {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write("[コマンドの実行でエラーが発生しました]");
-        Console.ForegroundColor = ConsoleColor.White;
         string errorMessage = result.Error switch
         {
             InteractionCommandError.UnmetPrecondition => $"コマンドの前提条件が満たされていません。{result.ErrorReason}",
@@ -87,20 +81,35 @@ internal class DiscordLogger : IDiscordLogger
             InteractionCommandError.Unsuccessful => $"コマンドが実行できませんでした。",
             _ => ""
         };
-        Console.WriteLine(errorMessage);
+        if (this.Printable is not null)
+        {
+            this.Printable.PrintCommandError("[コマンドの実行でエラーが発生しました]", performer,  errorMessage);
+        }
+        WriteLogFile(performer);
         WriteLogFile("[コマンドの実行でエラーが発生しました]" + errorMessage);
     }
-    private void WriteSuccessLog(SlashCommandInfo commandInfo)
+    private void WriteSuccessLog(SlashCommandInfo commandInfo, string performer)
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write($"[実行されました]");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine($"コマンド名：{commandInfo.Name}");
+        if (this.Printable is not null)
+        {
+            this.Printable.PrintCommandSuccess("[実行されました]", performer,  $"コマンド名：{commandInfo.Name}");
+        }
+        WriteLogFile(performer);
         WriteLogFile($"[実行されました]" + $"コマンド名：{commandInfo.Name}");
     }
 
     private void WriteLogFile(string text)
     {
         this.FileWriter.WriteLogFile(@"Log/currentLog.txt", text);
+    }
+
+    public void WriteErrorLog(string message)
+    {
+        var now = DateTime.Now.ToString("HH:mm:ss");
+        if (this.Printable is not null)
+        {
+            this.Printable.PrintError($"【Error】", $"{now}{message}");
+        }
+        WriteLogFile($"【Error】{now} {message}");
     }
 }
