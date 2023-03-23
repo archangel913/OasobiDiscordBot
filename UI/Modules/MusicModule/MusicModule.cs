@@ -3,6 +3,8 @@ using Application.Interface;
 using System.Reflection;
 using Application.Musics;
 using Discord.WebSocket;
+using Discord;
+using System.Runtime.CompilerServices;
 
 namespace UI.Modules.MusicModule
 {
@@ -15,106 +17,24 @@ namespace UI.Modules.MusicModule
 
         private Musics Musics { get; }
 
-        [SlashCommand("play", "Play the music/play list.")]
-        public async Task Play(string url)
+        [SlashCommand("musicplayer", "experimental musicplayer")]
+        public async Task MusicPlayer()
         {
             try
             {
-                await this.RespondAsync(Musics.Language["UI.Modules.MusicModule.MusicModule.Play.Wait"]);
-                string msg = await Musics.Play(((SocketGuildUser)Context.User).VoiceChannel, url);
-                await this.ReplyAsync(msg);
-            }
-            catch (Exception e)
-            {
-                await this.ReplyAsync(e.Message);
-                throw;
-            }
-        }
+                await this.DeferAsync();
+                await this.DeleteOriginalResponseAsync();
+                var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
+                if (voiceChannel is null) throw new Exception(Musics.Language["Application.Musics.Musics.InvalidVoiceChannelExecption"]);
+                var componentBuilder = GetComponentBuilder();
 
+                var builder = Musics.Queue(voiceChannel);
 
-        [SlashCommand("exit", "Exit from the voice channel.")]
-        public async Task Exit()
-        {
-            try
-            {
-                await this.RespondAsync(Musics.Language["UI.Modules.MusicModule.MusicModule.Exit.Wait"]);
-                string msg = Musics.Exit(((SocketGuildUser)Context.User).VoiceChannel);
-                await this.ReplyAsync(msg);
-            }
-            catch (Exception e)
-            {
-                await this.ReplyAsync(e.Message);
-                throw;
-            }
-        }
+                var controllerMessage = await this.ReplyAsync(Musics.Language["UI.Modules.MusicModule.MusicModule.Queue.SentQueue"], components: componentBuilder.Build(), embed: builder.Build());
 
-        [SlashCommand("queue", "Send the queue.")]
-        public async Task Queue(int page = 1)
-        {
-            try
-            {
-                var builder = Musics.Queue(page, ((SocketGuildUser)Context.User).VoiceChannel);
-                await this.RespondAsync(Musics.Language["UI.Modules.MusicModule.MusicModule.Queue.SentQueue"], embed: builder.Build());
-            }
-            catch (Exception e)
-            {
-                await this.ReplyAsync(e.Message);
-                throw;
-            }
-        }
-
-        [SlashCommand("pause", "Toggle pause.")]
-        public async Task Pause()
-        {
-            try
-            {
-                var msg = Musics.Pause(((SocketGuildUser)Context.User).VoiceChannel);
-                await this.RespondAsync(msg);
-            }
-            catch (Exception e)
-            {
-                await this.ReplyAsync(e.Message);
-                throw;
-            }
-        }
-
-        [SlashCommand("skip", "Skip the current music.")]
-        public async Task Skip()
-        {
-            try
-            {
-                var msg = Musics.Skip(((SocketGuildUser)Context.User).VoiceChannel);
-                await this.RespondAsync(msg);
-            }
-            catch (Exception e)
-            {
-                await this.ReplyAsync(e.Message);
-                throw;
-            }
-        }
-
-        [SlashCommand("shuffle", "Toggle shuffle.")]
-        public async Task Shuffle()
-        {
-            try
-            {
-                var msg = Musics.Shuffle(((SocketGuildUser)Context.User).VoiceChannel);
-                await this.RespondAsync(msg);
-            }
-            catch (Exception e)
-            {
-                await this.ReplyAsync(e.Message);
-                throw;
-            }
-        }
-
-        [SlashCommand("loop", "Switch the mode of loop.")]
-        public async Task Loop()
-        {
-            try
-            {
-                var msg = Musics.Loop(((SocketGuildUser)Context.User).VoiceChannel);
-                await this.RespondAsync(msg);
+                var controller = Musics.GetController(voiceChannel);
+                if (controller is not null) await controller.DeleteAsync();
+                Musics.SetController(voiceChannel, controllerMessage);
             }
             catch (Exception e)
             {
@@ -138,23 +58,56 @@ namespace UI.Modules.MusicModule
             }
         }
 
-
-        [SlashCommand("volume", "Change the volume.")]
-        public async Task Volume(int volume = 0)
+        internal static ComponentBuilder GetComponentBuilder(bool isShuffle = false, string loopType = "normal", int volume = 0)
         {
-            try
+            var componentBuilder = new ComponentBuilder();
+
+            var page = new ActionRowBuilder();
+            page = page
+                .WithButton(new ButtonBuilder("previous", "previous-page"))
+                .WithButton(new ButtonBuilder("now", "now-page"))
+                .WithButton(new ButtonBuilder("next", "next-page"));
+
+            var musicController = new ActionRowBuilder();
+            musicController = musicController
+                .WithButton(new ButtonBuilder("add", "add"))
+                .WithButton(new ButtonBuilder("pause", "pause"))
+                .WithButton(new ButtonBuilder("exit", "exit"))
+                .WithButton(new ButtonBuilder("skip", "skip"));
+
+            var queueRule = new ActionRowBuilder();
+            queueRule = queueRule.WithButton(isShuffle ? new ButtonBuilder("shuffle On", "shuffle") : new ButtonBuilder("shuffle Off", "shuffle"));
+            if(loopType == "normal")
             {
-                var msg = Musics.Volume(((SocketGuildUser)Context.User).VoiceChannel, volume);
-                await this.RespondAsync(msg);
+                queueRule = queueRule.WithButton(new ButtonBuilder("normal", "loop"));
             }
-            catch (Exception e)
+            else if(loopType == "queue")
             {
-                await this.ReplyAsync(e.Message);
-                throw;
+                queueRule = queueRule.WithButton(new ButtonBuilder("queue loop", "loop"));
             }
+            else if(loopType == "oneSong")
+            {
+                queueRule = queueRule.WithButton(new ButtonBuilder("one song", "loop"));
+            }
+            else
+            {
+                throw new ArgumentException("loopType is invalid");
+            }
+
+            var volumeController = new ActionRowBuilder();
+            volumeController = volumeController
+                .WithButton(new ButtonBuilder("volume up", "volume-up"))
+                .WithButton(new ButtonBuilder(volume.ToString(), "volume-default"))
+                .WithButton(new ButtonBuilder("volume down", "volume-down"));
+
+            componentBuilder = componentBuilder
+                .AddRow(page)
+                .AddRow(musicController)
+                .AddRow(queueRule)
+                .AddRow(volumeController);
+
+            return componentBuilder;
         }
-
-
 
         public Assembly? GetAssembly()
         {

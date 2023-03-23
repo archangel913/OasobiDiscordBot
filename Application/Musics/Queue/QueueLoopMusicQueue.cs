@@ -15,7 +15,7 @@ namespace Application.Musics.Queue
 
         public override string ToString()
         {
-            return this.Language["Application.Musics.Queue.QueueLoopMusicQueue.QueueLoopMusicQueueName"];
+            return "queue";
         }
     }
 }

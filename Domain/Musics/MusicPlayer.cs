@@ -2,6 +2,7 @@
 using Domain.Interface;
 using Domain.Musics.Queue;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net;
 
 namespace Domain.Musics
@@ -32,6 +33,10 @@ namespace Domain.Musics
 
         private double Volume { get; set; } = 0.1;
 
+        private IUserMessage? Controller { get; set; }
+
+        private int CurrentQueuePage { get; set; } = 1;
+
         public bool CanSkip { get; private set; } = false;
 
         public string GuildName { get; }
@@ -52,6 +57,32 @@ namespace Domain.Musics
             this.VoiceChannelId = voiceChannel.Id;
             this.MusicQueue = new MusicQueue(factories);
         }
+
+        public void SetController(IUserMessage controller)
+        {
+            this.Controller = controller;
+        }
+
+        public IUserMessage? GetController()
+        {
+            return this.Controller;
+        }
+
+        public void AddCurrentQueuePage(int page)
+        {
+            this.CurrentQueuePage += page;
+        }
+
+        public void SetCurrentQueuePage(int page)
+        {
+            this.CurrentQueuePage = page;
+        }
+
+        public int GetCurrentQueuePage()
+        {
+            return this.CurrentQueuePage;
+        }
+
         public async Task ConnecetAsync()
         {
             if (!AudioSender.IsConnect)
@@ -68,7 +99,7 @@ namespace Domain.Musics
         {
             this.CanLoad = false;
             this.IsExit = true;
-            if (this.PlayTask is null) throw new NullReferenceException("PlayTask is null in MusicPlayer");
+            if (this.PlayTask is null) return;
             this.PlayTask.Wait();
         }
 
@@ -82,12 +113,12 @@ namespace Domain.Musics
             return this.Voicechannel.Id.Equals(voiceChannel.Id);
         }
 
-        public void Play()
+        public void Play(Func<IVoiceChannel, Task> func)
         {
-            this.PlayTask ??= Task.Run(async () => await PlayAsync());
+            this.PlayTask ??= Task.Run(async () => await PlayAsync(func));
         }
 
-        private async Task PlayAsync()
+        private async Task PlayAsync(Func<IVoiceChannel, Task> func)
         {
             try
             {
@@ -136,11 +167,13 @@ namespace Domain.Musics
                         encodedStream.Dispose();
                     }
                     now = MusicQueue.Dequeue();
+                    await func(Voicechannel);
                 }
             }
             finally
             {
                 await this.AudioSender.DisconnectAsync();
+                if (this.Controller is not null) await this.Controller.DeleteAsync();
                 MusicPlayerProvider.DeleteMusicPlayer(this);
             }
         }
