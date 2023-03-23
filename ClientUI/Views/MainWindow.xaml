@@ -7,7 +7,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:ClientUI.ViewModels"
-    Title="MainWindow"
+    Title="MusicBot"
     Width="1280"
     Height="720"
     d:DataContext="{d:DesignInstance vm:MainWindowVM}"
@@ -84,24 +84,50 @@
                     </StackPanel>
                     <RichTextBox
                         x:Name="logTextBox"
-                        VerticalContentAlignment="Top"
-                        materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
-                        Block.LineHeight="1"
-                        AutoWordSelection="False"
-                        BorderThickness="1"
-                        FontSize="12pt"
-                        Background="Black"
                         Grid.Row="1"
                         Margin="10"
-                        VerticalScrollBarVisibility="Visible"
+                        VerticalContentAlignment="Top"
+                        materialDesign:TextFieldAssist.TextFieldCornerRadius="5"
+                        AutoWordSelection="False"
+                        Background="Black"
+                        Block.LineHeight="1"
+                        BorderThickness="1"
+                        FontSize="12pt"
                         IsInactiveSelectionHighlightEnabled="True"
                         IsReadOnly="True"
-                        Style="{StaticResource MaterialDesignRichTextBox}" />
+                        Style="{StaticResource MaterialDesignRichTextBox}"
+                        VerticalScrollBarVisibility="Visible" />
                 </Grid>
-                <Button
-                    Grid.Row="1"
-                    Command="{Binding StartBotCmd}"
-                    Content="開始" />
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel>
+                        <TextBlock
+                            Margin="20,10,10,0"
+                            FontSize="12pt"
+                            Text="稼働時間" />
+                        <TextBlock
+                            Margin="20,10"
+                            FontSize="10pt"
+                            Text="{Binding OperatingTimeStr}" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <Button
+                            Width="100"
+                            Margin="10"
+                            Command="{Binding StartBotCmd}"
+                            Content="接続"
+                            Style="{StaticResource MaterialDesignOutlinedDarkButton}" />
+                        <Button
+                            Width="100"
+                            Margin="10"
+                            Command="{Binding StopBotCmd}"
+                            Content="切断"
+                            Style="{StaticResource MaterialDesignOutlinedDarkButton}" />
+                    </StackPanel>
+                </Grid>
             </Grid>
         </TabItem>
         <TabItem Width="150" Height="150">

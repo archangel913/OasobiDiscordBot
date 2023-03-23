@@ -4,25 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Bots;
+using Domain.Musics;
 
 namespace ClientUI.ViewModels.Commands.MainWindows
 {
-    internal class StartBotCommand : CommandBase
+    internal class StopCommand : CommandBase
     {
-        public StartBotCommand(MainWindowVM mainWindowVM, IAsyncBotClient botClient, ILogPrintable logPrintable) : base(mainWindowVM)
+        public StopCommand(MainWindowVM mainWindowVM, IAsyncBotClient botClient) : base(mainWindowVM)
         {
             this.BotClient = botClient;
-            this.LogPrintable = logPrintable;
         }
 
         private IAsyncBotClient BotClient { get; }
 
-        private ILogPrintable LogPrintable { get; }
-
         public override void Execute(object? parameter)
         {
-            this.BotClient.StartAsync(this.LogPrintable);
-            this.MainWindowVM.OperatingTimer.Start();
+            MusicPlayerProvider.Clear();
+            this.BotClient.StopAsync();
+            this.MainWindowVM.OperatingTimer.Stop();
+            this.MainWindowVM.OperatingTime = new Models.OperatingTime();
         }
     }
 }

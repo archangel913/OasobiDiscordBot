@@ -34,6 +34,11 @@ namespace Domain.Musics
             //logger.WriteBotSystemLog("Delete MusicPlayer  guild : " + musicPlayer.GuildName + "  channel : " + musicPlayer.ChannelName);
         }
 
+        public static void Clear()
+        {
+            MusicPlayerList.Clear();
+        }
+
         public static List<MusicPlayer> GetAllMusicPlayers()
         {
             return new List<MusicPlayer>(MusicPlayerList);
