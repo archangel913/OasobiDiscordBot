@@ -77,15 +77,15 @@ namespace DiscordUI.Modules.MusicModule
 
             var queueRule = new ActionRowBuilder();
             queueRule = queueRule.WithButton(isShuffle ? new ButtonBuilder("shuffle On", "shuffle") : new ButtonBuilder("shuffle Off", "shuffle"));
-            if(loopType == "normal")
+            if (loopType == "normal")
             {
                 queueRule = queueRule.WithButton(new ButtonBuilder("normal", "loop"));
             }
-            else if(loopType == "queue")
+            else if (loopType == "queue")
             {
                 queueRule = queueRule.WithButton(new ButtonBuilder("queue loop", "loop"));
             }
-            else if(loopType == "oneSong")
+            else if (loopType == "oneSong")
             {
                 queueRule = queueRule.WithButton(new ButtonBuilder("one song", "loop"));
             }
@@ -105,25 +105,7 @@ namespace DiscordUI.Modules.MusicModule
                 .AddRow(musicController)
                 .AddRow(queueRule)
                 .AddRow(volumeController);
-
-        [SlashCommand("volume", "Change the volume.")]
-        public async Task Volume(int volume = 0)
-        {
-            try
-            {
-                var msg = Musics.Volume(((SocketGuildUser)Context.User).VoiceChannel, volume);
-                await this.RespondAsync(msg);
-            }
-            catch (Exception e)
-            {
-                await this.ReplyAsync(e.Message);
-                throw;
-            }
+            return componentBuilder;
         }
-
-
-
-
-
     }
 }

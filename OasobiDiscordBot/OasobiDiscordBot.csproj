@@ -30,7 +30,6 @@
     <ProjectReference Include="..\ClientUI\ClientUI.csproj" />
     <ProjectReference Include="..\DiscordUI\DiscordUI.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\UI\DiscordUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
