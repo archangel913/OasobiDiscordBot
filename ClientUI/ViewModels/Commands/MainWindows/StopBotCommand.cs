@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Bots;
-using Domain.Musics;
+using Application.Musics;
 
 namespace ClientUI.ViewModels.Commands.MainWindows
 {

@@ -16,13 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Musics\Queue\Note.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Musics\Queue\NewFile1.txt" />
-    <None Remove="Musics\Queue\NewFile2.txt" />
-    <None Remove="Musics\Queue\NewFile3.txt" />
+    <None Remove="Musics\NewFile1.txt" />
     <None Remove="Settings\NewFile1.txt" />
   </ItemGroup>
 

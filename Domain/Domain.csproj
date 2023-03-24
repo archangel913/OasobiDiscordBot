@@ -16,8 +16,11 @@
 
   <ItemGroup>
     <Compile Remove="Musics\Queue\NormalMusicQueue.cs" />
+    <Compile Remove="Musics\Queue\NormalMusicQueueBase.cs" />
     <Compile Remove="Musics\Queue\OneSongLoopMusicQueue.cs" />
+    <Compile Remove="Musics\Queue\OneSongLoopMusicQueueBase.cs" />
     <Compile Remove="Musics\Queue\QueueLoopMusicQueue.cs" />
+    <Compile Remove="Musics\Queue\QueueLoopMusicQueueBase.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordUI", "DiscordUI\DiscordUI.csproj", "{BCC8F27C-6880-4553-BE4E-61E14EC0857D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{5F65BEFD-14E8-4FE2-A812-A382E499F0E8} = {5F65BEFD-14E8-4FE2-A812-A382E499F0E8}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{5F65BEFD-14E8-4FE2-A812-A382E499F0E8}"
 EndProject
@@ -23,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientUI", "ClientUI\ClientUI.csproj", "{E960189F-2D7B-4DB5-8CAB-0DDF33CBFE87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientUI", "ClientUI\ClientUI.csproj", "{E960189F-2D7B-4DB5-8CAB-0DDF33CBFE87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,13 @@
+ffmpegの用意
+youtubeApiの準備
+VisualStudio2022 - .NET6.0
+スタートアッププロジェクトにoasobiDisocordBotを指定
+build
+ビルド先に移動
+
+OasobiDiscordBot.dll.configを変更
+vnext_natives_win32_x64　をダウンロード
+libopus.dll -> opus.dll rename
+libsodium.dll
+
+

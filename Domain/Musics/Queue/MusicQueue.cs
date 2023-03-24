@@ -4,11 +4,10 @@ namespace Domain.Musics.Queue
 {
     public class MusicQueue
     {
-        public MusicQueue(QueueStateFactories factories)
+        public MusicQueue(IQueueState queueState)
         {
             this.Queue = new List<Music>();
-            this.State = factories.NormalMusicQueue.Create();
-            this.StateFactories = factories;
+            this.State = queueState;
         }
 
         public Music? Now { get; internal set; }
@@ -17,15 +16,13 @@ namespace Domain.Musics.Queue
 
         internal List<Music> Queue { get; set; } = new();
 
-        internal QueueStateFactories StateFactories { get; }
-
         protected static object LockObject { get; } = new object();
 
         public IQueueState State { get; private set; }
 
         public void ChangeLoopState()
         {
-            this.State = this.State.ChangeLoopState(this);
+            this.State = this.State.Next;
         }
 
         public Music? Dequeue() => this.State.Dequeue(this);
