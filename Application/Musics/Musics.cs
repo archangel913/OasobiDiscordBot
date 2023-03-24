@@ -6,6 +6,9 @@ using Application.Languages;
 using Domain.Musics.Queue;
 using Application.Musics.Queue;
 using Microsoft.Extensions.DependencyInjection;
+using Discord.WebSocket;
+using Discord.Interactions;
+using System.Runtime.CompilerServices;
 
 namespace Application.Musics
 {
@@ -27,7 +30,62 @@ namespace Application.Musics
 
         private IServiceProvider Service { get; }
 
-        public async Task<string> Play(IVoiceChannel voiceChannel, string url)
+        public string SetController(IVoiceChannel voiceChannel, IUserMessage message)
+        {
+            try
+            {
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                musicPlayer.SetController(message);
+                return "complete";
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "IVoiceChannel is null" || e.Message == "voiceChannel is invalid")
+                {
+                    return Language["Application.Musics.Musics.InvalidVoiceChannelExecption"];
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        public IUserMessage? GetController(IVoiceChannel voiceChannel)
+        {
+            try
+            {
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                var controller = musicPlayer.GetController();
+                if (controller is null) return null;
+                return controller;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public void AddCurrentQueuePage(IVoiceChannel voiceChannel, int page)
+        {
+            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+            musicPlayer.AddCurrentQueuePage(page);
+        }
+
+        public void SetCurrentQueuePage(IVoiceChannel voiceChannel, int page)
+        {
+            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+            musicPlayer.SetCurrentQueuePage(page);
+        }
+
+        public int GetCurrentQueuePage(IVoiceChannel voiceChannel)
+        {
+            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+            return musicPlayer.GetCurrentQueuePage();
+        }
+
+
+        public async Task<string> Play(IVoiceChannel voiceChannel, string url, Func<IVoiceChannel, Task> func)
         {
             try
             {
@@ -35,7 +93,7 @@ namespace Application.Musics
                 var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 await musicPlayer.ConnecetAsync();
                 var addMusicList = await musicPlayer.Add(url);
-                musicPlayer.Play();
+                musicPlayer.Play(func);
                 return string.Format(Language["Application.Musics.Musics.Play.AddedMusics"], addMusicList.Count, addMusicList[0].Title);
             }
             catch (Exception e)
@@ -76,10 +134,11 @@ namespace Application.Musics
             }
         }
 
-        public EmbedBuilder Queue(int page, IVoiceChannel voiceChannel)
+        public EmbedBuilder Queue(IVoiceChannel voiceChannel)
         {
             try
             {
+                var page = GetCurrentQueuePage(voiceChannel);
                 var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
                 var builder = new EmbedBuilder();
                 builder.WithColor(0x02B4C0);
@@ -219,24 +278,16 @@ namespace Application.Musics
             }
         }
 
-        public string Shuffle(IVoiceChannel voiceChannel)
+        public bool Shuffle(IVoiceChannel voiceChannel)
         {
             try
             {
                 var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
-                bool isShuffled = musicPlayer.SwitchShuffleState();
-                return isShuffled ? Language["Application.Musics.Musics.ShuffleOn"] : Language["Application.Musics.Musics.ShuffleOff"];
+                return musicPlayer.SwitchShuffleState();
             }
-            catch (Exception e)
+            catch
             {
-                if (e.Message == "IVoiceChannel is null" || e.Message == "voiceChannel is invalid")
-                {
-                    return Language["Application.Musics.Musics.InvalidVoiceChannelExecption"];
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
         }
 

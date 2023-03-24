@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UI.Modules;
+namespace DiscordUI.Modules;
 public class ModuleBase : InteractionModuleBase
 {
     public ModuleBase(IServiceProvider services) 

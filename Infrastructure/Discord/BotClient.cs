@@ -1,58 +1,77 @@
-﻿using Application.Interface;
-using Application.Settings;
+﻿using Application.Settings;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Discord;
-using Domain.Interface;
 using Domain.Musics;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using Infrastructure.Loggings;
+using Application.Bots;
 
 namespace Infrastructure.Discord;
-public class BotClient
+public class BotClient : IAsyncBotClient
 {
-    private DiscordSocketClient Client { get; }
-    IServiceProvider Provider { get; }
-    InteractionService InteractionService { get; }
+    private DiscordSocketClient Client { get; set; }
+    
+    private IServiceProvider Provider { get; }
+    
+    private InteractionService InteractionService { get; }
+    
     private BotSettings Settings { get; }
-    private Connecter DiscordConnecter { get; }
-    private IDiscordLogger DiscordLogger { get; }
-    private IConsoleReader ConsoleReader { get; }
+    
+    private DiscordLogger DiscordLogger { get; }
+    
     private bool IsVoiceChannelInit { get; set; } = false;
 
     public BotClient(BotSettings settings, IServiceCollection services)
     {
-        this.DiscordConnecter = new Connecter();
         this.Settings = settings;
 
-        var socketConfig = new DiscordSocketConfig()
-        {
-            LogLevel = LogSeverity.Info,
-        };
-        this.Client = new DiscordSocketClient(socketConfig);
+        this.Client = GetInitializedClient();
         this.Provider = services.BuildServiceProvider();
-        this.DiscordLogger = this.Provider.GetRequiredService<IDiscordLogger>();
-        this.ConsoleReader = this.Provider.GetRequiredService<IConsoleReader>();
+        this.DiscordLogger = new DiscordLogger(new LocalFile.FileWriter());
         this.InteractionService = new InteractionService(Client.Rest);
     }
 
-    public async Task StartAsync()
+    public async Task StartAsync(ILogPrintable printable)
     {
+        this.DiscordLogger.Register(this.Client, this.InteractionService, printable);
         this.DiscordLogger.WriteBotSystemLog("Application Name : " + Settings.BotName);
         this.DiscordLogger.WriteBotSystemLog("Version : " + Settings.Version.Major + "." + Settings.Version.Minor + "." + Settings.Version.Patch);
         this.DiscordLogger.WriteBotSystemLog("Language : " + Settings.BotLanguage);
         this.Client.InteractionCreated += ExecuteSlashCommand;
         this.Client.Ready += RegisterCommands;
         this.Client.Ready += VoiceChannelUpdate;
-        this.DiscordLogger.Register(this.Client, this.InteractionService);
-        await DiscordConnecter.ConnectAsync(this.Client, Settings.DiscordToken);
-        this.ConsoleReader.ActiveConsole(this.DiscordConnecter);
-        await DiscordConnecter.DisconnectAsync(this.Client);
-        await Task.Delay(1000);
-        this.Client.Dispose();
+        await ConnectAsync();
     }
 
-    public async Task SetModulesAsync(IReadOnlyCollection<Assembly> assemblyOfModules)
+    public async Task StopAsync()
+    {
+        await DisconnectAsync();
+        await Task.Delay(1000);
+        this.Client.Dispose();
+        this.Client = this.GetInitializedClient();
+    }
+
+    public async Task RestartAsync(ILogPrintable printable)
+    {
+        await StopAsync();
+        await StartAsync(printable);
+    }
+
+    private async Task ConnectAsync()
+    {
+        await this.Client.LoginAsync(TokenType.Bot, this.Settings.DiscordToken);
+        await this.Client.StartAsync();
+    }
+
+    private async Task DisconnectAsync()
+    {
+        await this.Client.StopAsync();
+        await this.Client.LogoutAsync();
+    }
+
+    public async Task SetModulesAsync(IEnumerable<Assembly> assemblyOfModules)
     {
         foreach (var module in assemblyOfModules)
         {
@@ -62,6 +81,7 @@ public class BotClient
 
     private async Task RegisterCommands()
     {
+        await this.InteractionService.RegisterCommandsToGuildAsync(1019297738640330803);
         await this.InteractionService.RegisterCommandsGloballyAsync();
     }
 
@@ -69,6 +89,15 @@ public class BotClient
     {
         var socketInteractionContext = new SocketInteractionContext(this.Client, interaction);
         await this.InteractionService.ExecuteCommandAsync(socketInteractionContext, this.Provider);
+    }
+
+    private DiscordSocketClient GetInitializedClient()
+    {
+        var socketConfig = new DiscordSocketConfig()
+        {
+            LogLevel = LogSeverity.Info,
+        };
+        return new DiscordSocketClient(socketConfig);
     }
 
     private Task VoiceChannelUpdate()

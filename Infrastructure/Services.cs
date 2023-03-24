@@ -7,14 +7,15 @@ using Infrastructure.Videos;
 using Infrastructure.YouTubeMusics;
 using Application.Settings;
 using Infrastructure.Loggings;
+using Application.Bots;
+using System.Reflection;
 
 namespace Infrastructure
 {
     public class Services
     {
-        public void RegisterServices(IServiceCollection services, BotSettings settings)
+        public IServiceProvider RegisterServices(IServiceCollection services, BotSettings settings, IEnumerable<Assembly> assemblies)
         {
-            services.AddTransient<IDiscordConnecter, Connecter>();
             services.AddTransient<IFileReader,FileReader>();
             services.AddTransient<IAudioSender, AudioSender>();
             services.AddTransient<IHttp, Http.Http>();
@@ -29,6 +30,14 @@ namespace Infrastructure
             var fileWriter = new FileWriter();
             services.AddTransient<IFileWriter, FileWriter>(value => fileWriter);
             services.AddSingleton<IDiscordLogger, DiscordLogger>(value => new DiscordLogger(fileWriter));
+
+            var bot = new BotClient(settings, services);
+            bot.SetModulesAsync(assemblies).Wait();
+            services.AddSingleton<IAsyncBotClient, BotClient>(factory =>
+            {
+                return bot;
+            });
+            return services.BuildServiceProvider();
         }
     }
 }
