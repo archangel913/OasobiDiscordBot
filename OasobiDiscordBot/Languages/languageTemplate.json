@@ -1,8 +1,8 @@
 {
     "KeySentencePairs": {
-        "UI.Modules.MusicModule.MusicModule.Play.Wait": "",
-        "UI.Modules.MusicModule.MusicModule.Exit.Wait": "",
-        "UI.Modules.MusicModule.MusicModule.Queue.SentQueue": "",
+        "DiscordUI.Modules.MusicModule.MusicModule.Play.Wait": "",
+        "DiscordUI.Modules.MusicModule.MusicModule.Exit.Wait": "",
+        "DiscordUI.Modules.MusicModule.MusicModule.Queue.SentQueue": "",
         "Application.Musics.Musics.Play.AddedMusics": "",
         "Application.Musics.Musics.Exit.Exited": "",
         "Application.Musics.Musics.Queue.QueueTitle": "",

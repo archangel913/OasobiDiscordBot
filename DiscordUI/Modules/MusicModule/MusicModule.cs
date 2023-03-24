@@ -6,9 +6,9 @@ using Discord.WebSocket;
 using Discord;
 using System.Runtime.CompilerServices;
 
-namespace UI.Modules.MusicModule
+namespace DiscordUI.Modules.MusicModule
 {
-    public class MusicModule : ModuleBase, IAssembleGetable
+    public class MusicModule : ModuleBase
     {
         public MusicModule(IServiceProvider services) : base(services)
         {
@@ -106,12 +106,24 @@ namespace UI.Modules.MusicModule
                 .AddRow(queueRule)
                 .AddRow(volumeController);
 
-            return componentBuilder;
+        [SlashCommand("volume", "Change the volume.")]
+        public async Task Volume(int volume = 0)
+        {
+            try
+            {
+                var msg = Musics.Volume(((SocketGuildUser)Context.User).VoiceChannel, volume);
+                await this.RespondAsync(msg);
+            }
+            catch (Exception e)
+            {
+                await this.ReplyAsync(e.Message);
+                throw;
+            }
         }
 
-        public Assembly? GetAssembly()
-        {
-            return Assembly.GetAssembly(typeof(MusicModule));
-        }
+
+
+
+
     }
 }

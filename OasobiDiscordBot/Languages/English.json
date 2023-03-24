@@ -1,8 +1,8 @@
 {
     "KeySentencePairs": {
-        "UI.Modules.MusicModule.MusicModule.Play.Wait": "Execute play Command. Please wait...",
-        "UI.Modules.MusicModule.MusicModule.Exit.Wait": "Exiting...",
-        "UI.Modules.MusicModule.MusicModule.Queue.SentQueue": "THE QUEUE",
+        "DiscordUI.Modules.MusicModule.MusicModule.Play.Wait": "Execute play Command. Please wait...",
+        "DiscordUI.Modules.MusicModule.MusicModule.Exit.Wait": "Exiting...",
+        "DiscordUI.Modules.MusicModule.MusicModule.Queue.SentQueue": "THE QUEUE",
         "Application.Musics.Musics.Play.AddedMusics": "Added {0} musics below {1}.",
         "Application.Musics.Musics.Exit.Exited": "Music player exited.",
         "Application.Musics.Musics.Queue.QueueTitle": "Current playing queue",

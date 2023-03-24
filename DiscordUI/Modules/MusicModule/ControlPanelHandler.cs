@@ -3,7 +3,7 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 
-namespace UI.Modules.MusicModule
+namespace DiscordUI.Modules.MusicModule
 {
     public class ControlPanelHandler : ModuleBase
     {

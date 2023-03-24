@@ -1,8 +1,8 @@
 ﻿{
     "KeySentencePairs": {
-        "UI.Modules.MusicModule.MusicModule.Play.Wait": "Playコマンドが実行されました。しばらくお待ちください。",
-        "UI.Modules.MusicModule.MusicModule.Exit.Wait": "終了中。",
-        "UI.Modules.MusicModule.MusicModule.Queue.SentQueue": "キュー",
+        "DiscordUI.Modules.MusicModule.MusicModule.Play.Wait": "Playコマンドが実行されました。しばらくお待ちください。",
+        "DiscordUI.Modules.MusicModule.MusicModule.Exit.Wait": "終了中。",
+        "DiscordUI.Modules.MusicModule.MusicModule.Queue.SentQueue": "キュー",
         "Application.Musics.Musics.Play.AddedMusics": "{0}曲追加されました。 最初の曲は{1}です。",
         "Application.Musics.Musics.Exit.Exited": "音楽プレイヤーを終了しました。",
         "Application.Musics.Musics.Queue.QueueTitle": "キュー",

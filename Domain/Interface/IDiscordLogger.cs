@@ -5,7 +5,8 @@ namespace Domain.Interface
 {
     public interface IDiscordLogger
     {
-        public abstract void Register(DiscordSocketClient client, InteractionService interactionService);
-        public void WriteBotSystemLog(string message, ConsoleColor color = ConsoleColor.Cyan);
+        public void WriteBotSystemLog(string message);
+
+        public void WriteErrorLog(string message);
     }
 }
