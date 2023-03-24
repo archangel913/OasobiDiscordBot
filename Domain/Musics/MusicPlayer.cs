@@ -9,6 +9,19 @@ namespace Domain.Musics
 {
     public class MusicPlayer
     {
+        public MusicPlayer(IServiceProvider services, IVoiceChannel voiceChannel)
+        {
+            this.AudioSender = services.GetRequiredService<IAudioSender>();
+            this.VideoLib = services.GetRequiredService<IVideoLib>();
+            this.Logger = services.GetRequiredService<IDiscordLogger>();
+            this.MusicGetter = services.GetRequiredService<IGetMusic>();
+            this.Voicechannel = voiceChannel;
+            this.GuildName = voiceChannel.Guild.Name;
+            this.ChannelName = voiceChannel.Name;
+            this.VoiceChannelId = voiceChannel.Id;
+            this.MusicQueue = new MusicQueue(new NormalMusicQueueState());
+        }
+
         private IVoiceChannel Voicechannel { get; set; }
 
         private IAudioSender AudioSender { get; }
@@ -31,11 +44,11 @@ namespace Domain.Musics
 
         private bool IsExit { get; set; } = false;
 
-        private double Volume { get; set; } = 0.1;
+        public double Volume { get; set; } = 0.1;
 
-        private IUserMessage? Controller { get; set; }
+        public IUserMessage? Controller { get; set; }
 
-        private int CurrentQueuePage { get; set; } = 1;
+        public int CurrentQueuePage { get; set; } = 1;
 
         public bool CanSkip { get; private set; } = false;
 
@@ -45,42 +58,9 @@ namespace Domain.Musics
 
         public ulong VoiceChannelId { get; }
 
-        public MusicPlayer(IServiceProvider services, IVoiceChannel voiceChannel, QueueStateFactories factories)
-        {
-            this.AudioSender = services.GetRequiredService<IAudioSender>();
-            this.VideoLib = services.GetRequiredService<IVideoLib>();
-            this.Logger = services.GetRequiredService<IDiscordLogger>();
-            this.MusicGetter = services.GetRequiredService<IGetMusic>();
-            this.Voicechannel = voiceChannel;
-            this.GuildName = voiceChannel.Guild.Name;
-            this.ChannelName = voiceChannel.Name;
-            this.VoiceChannelId = voiceChannel.Id;
-            this.MusicQueue = new MusicQueue(factories);
-        }
-
-        public void SetController(IUserMessage controller)
-        {
-            this.Controller = controller;
-        }
-
-        public IUserMessage? GetController()
-        {
-            return this.Controller;
-        }
-
         public void AddCurrentQueuePage(int page)
         {
             this.CurrentQueuePage += page;
-        }
-
-        public void SetCurrentQueuePage(int page)
-        {
-            this.CurrentQueuePage = page;
-        }
-
-        public int GetCurrentQueuePage()
-        {
-            return this.CurrentQueuePage;
         }
 
         public async Task ConnecetAsync()
@@ -103,22 +83,12 @@ namespace Domain.Musics
             this.PlayTask.Wait();
         }
 
-        public bool IsMatchVoiceChunnel(IGuildChannel voiceChannel)
+        public void Play(Func<IVoiceChannel, Task> func, Action<MusicPlayer> action)
         {
-            return this.Voicechannel.GuildId.Equals(voiceChannel.GuildId);
+            this.PlayTask ??= Task.Run(async () => await PlayAsync(func, action));
         }
 
-        public bool IsMatchVoiceChunnel(IEntity<ulong> voiceChannel)
-        {
-            return this.Voicechannel.Id.Equals(voiceChannel.Id);
-        }
-
-        public void Play(Func<IVoiceChannel, Task> func)
-        {
-            this.PlayTask ??= Task.Run(async () => await PlayAsync(func));
-        }
-
-        private async Task PlayAsync(Func<IVoiceChannel, Task> func)
+        private async Task PlayAsync(Func<IVoiceChannel, Task> updateQueue, Action<MusicPlayer> deleteMusicPlayer)
         {
             try
             {
@@ -167,14 +137,14 @@ namespace Domain.Musics
                         encodedStream.Dispose();
                     }
                     now = MusicQueue.Dequeue();
-                    await func(Voicechannel);
+                    await updateQueue(Voicechannel);
                 }
             }
             finally
             {
                 await this.AudioSender.DisconnectAsync();
                 if (this.Controller is not null) await this.Controller.DeleteAsync();
-                MusicPlayerProvider.DeleteMusicPlayer(this);
+                deleteMusicPlayer(this);
             }
         }
 
@@ -220,7 +190,11 @@ namespace Domain.Musics
 
         public bool TryRemoveAt(int index, out string deleteMusicName) => MusicQueue.TryRemoveAt(index, out deleteMusicName);
 
-        public void ChangeLoopState() => this.MusicQueue.ChangeLoopState();
+        public IQueueState ChangeLoopState()
+        {
+            this.MusicQueue.ChangeLoopState();
+            return this.MusicQueue.State;
+        }
 
         public Type GetLoopType() => MusicQueue.GetType();
 

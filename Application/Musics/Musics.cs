@@ -4,11 +4,8 @@ using Domain.Musics;
 using Application.Interface;
 using Application.Languages;
 using Domain.Musics.Queue;
-using Application.Musics.Queue;
 using Microsoft.Extensions.DependencyInjection;
-using Discord.WebSocket;
-using Discord.Interactions;
-using System.Runtime.CompilerServices;
+using Domain.Interface;
 
 namespace Application.Musics
 {
@@ -18,15 +15,9 @@ namespace Application.Musics
         {
             this.Language = services.GetRequiredService<ILanguageRepository>().Find();
             this.Service = services;
-            this.QueueStateFactories = new(
-                new OneSongLoopMusicQueueFactory(this.Language),
-                new QueueLoopMusicQueueFactory(this.Language),
-                new NormalMusicQueueFactory(this.Language));
         }
 
         public LanguageDictionary Language { get; }
-
-        private QueueStateFactories QueueStateFactories { get; }
 
         private IServiceProvider Service { get; }
 
@@ -34,8 +25,8 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
-                musicPlayer.SetController(message);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
+                musicPlayer.Controller = message;
                 return "complete";
             }
             catch (Exception e)
@@ -55,8 +46,8 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
-                var controller = musicPlayer.GetController();
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
+                var controller = musicPlayer.Controller;
                 if (controller is null) return null;
                 return controller;
             }
@@ -68,20 +59,20 @@ namespace Application.Musics
 
         public void AddCurrentQueuePage(IVoiceChannel voiceChannel, int page)
         {
-            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
             musicPlayer.AddCurrentQueuePage(page);
         }
 
         public void SetCurrentQueuePage(IVoiceChannel voiceChannel, int page)
         {
-            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
-            musicPlayer.SetCurrentQueuePage(page);
+            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
+            musicPlayer.CurrentQueuePage = page;
         }
 
         public int GetCurrentQueuePage(IVoiceChannel voiceChannel)
         {
-            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
-            return musicPlayer.GetCurrentQueuePage();
+            var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
+            return musicPlayer.CurrentQueuePage;
         }
 
 
@@ -90,10 +81,10 @@ namespace Application.Musics
             try
             {
                 if (voiceChannel is null) throw new ArgumentException("IVoiceChannel is null");
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 await musicPlayer.ConnecetAsync();
                 var addMusicList = await musicPlayer.Add(url);
-                musicPlayer.Play(func);
+                musicPlayer.Play(func, MusicPlayerProvider.DeleteMusicPlayer);
                 return string.Format(Language["Application.Musics.Musics.Play.AddedMusics"], addMusicList.Count, addMusicList[0].Title);
             }
             catch (Exception e)
@@ -117,7 +108,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 musicPlayer.Disconnect();
                 return Language["Application.Musics.Musics.Exit.Exited"];
             }
@@ -139,7 +130,7 @@ namespace Application.Musics
             try
             {
                 var page = GetCurrentQueuePage(voiceChannel);
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 var builder = new EmbedBuilder();
                 builder.WithColor(0x02B4C0);
                 builder.WithTitle(Language["Application.Musics.Musics.Queue.QueueTitle"]);
@@ -236,7 +227,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 bool pause = musicPlayer.SwitchPauseState();
                 return pause ? Language["Application.Musics.Musics.Pause.Paused"] : Language["Application.Musics.Musics.Pause.Unpaused"];
             }
@@ -257,7 +248,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 if (musicPlayer.CanSkip)
                 {
                     musicPlayer.Skip();
@@ -278,12 +269,13 @@ namespace Application.Musics
             }
         }
 
-        public bool Shuffle(IVoiceChannel voiceChannel)
+        public PlayingOption Shuffle(IVoiceChannel voiceChannel)
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
-                return musicPlayer.SwitchShuffleState();
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
+                var shuffleState = musicPlayer.SwitchShuffleState();
+                return new PlayingOption(shuffleState, musicPlayer.MusicQueue.State, musicPlayer.Volume);
             }
             catch
             {
@@ -291,24 +283,17 @@ namespace Application.Musics
             }
         }
 
-        public string Loop(IVoiceChannel voiceChannel)
+        public PlayingOption Loop(IVoiceChannel voiceChannel)
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
-                musicPlayer.ChangeLoopState();
-                return musicPlayer.MusicQueue.State.ToString();
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
+                var loopState = musicPlayer.ChangeLoopState();
+                return new PlayingOption(musicPlayer.MusicQueue.IsShuffle, loopState, musicPlayer.Volume);
             }
-            catch (Exception e)
+            catch
             {
-                if (e.Message == "IVoiceChannel is null" || e.Message == "voiceChannel is invalid")
-                {
-                    return Language["Application.Musics.Musics.InvalidVoiceChannelExecption"];
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
         }
 
@@ -316,7 +301,7 @@ namespace Application.Musics
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 string deleteMusicName;
                 if (musicPlayer.TryRemoveAt(index - 1, out deleteMusicName))
                     return string.Format(Language["Application.Musics.Musics.Remove.Removed"], deleteMusicName);
@@ -336,27 +321,17 @@ namespace Application.Musics
             }
         }
 
-        public string Volume(IVoiceChannel voiceChannel, double volume)
+        public PlayingOption Volume(IVoiceChannel voiceChannel, double volume)
         {
             try
             {
-                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel, QueueStateFactories);
+                var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 musicPlayer.SetVolume(volume);
-                if (volume != 0)
-                    return string.Format(Language["Application.Musics.Musics.SetVolume"], volume);
-                else
-                    return Language["Application.Musics.Musics.SetDefaltVolume"];
+                return new PlayingOption(musicPlayer.MusicQueue.IsShuffle, musicPlayer.MusicQueue.State, musicPlayer.Volume);
             }
-            catch (Exception e)
+            catch
             {
-                if (e.Message == "IVoiceChannel is null" || e.Message == "voiceChannel is invalid")
-                {
-                    return Language["Application.Musics.Musics.InvalidVoiceChannelExecption"];
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
         }
     }

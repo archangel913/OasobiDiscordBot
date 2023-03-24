@@ -14,14 +14,6 @@ namespace DiscordUI.Modules.MusicModule
 
         private Musics Musics { get; }
 
-        //ヤクザ実装
-        private static bool IsShuffle = false;
-
-        private static string LoopType = "normal";
-
-        private static int Volume = 0;
-        //ヤクザ実装end
-
         [ComponentInteraction("add")]
         public async Task Add()
         {
@@ -100,8 +92,9 @@ namespace DiscordUI.Modules.MusicModule
         public async Task Loop()
         {
             var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
-            LoopType = this.Musics.Loop(voiceChannel);
-            await this.UpdateStateAsync(voiceChannel);
+            var playingOption = this.Musics.Loop(voiceChannel);
+            
+            await this.UpdateStateAsync(voiceChannel, playingOption);
             await this.DeferAsync();
         }
 
@@ -109,8 +102,8 @@ namespace DiscordUI.Modules.MusicModule
         public async Task Shuffle()
         {
             var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
-            IsShuffle = this.Musics.Shuffle(voiceChannel);
-            await this.UpdateStateAsync(voiceChannel);
+            var playingOption = this.Musics.Shuffle(voiceChannel);
+            await this.UpdateStateAsync(voiceChannel, playingOption);
             await this.UpdateQueueAsync(voiceChannel);
             await this.DeferAsync();
         }
@@ -119,9 +112,8 @@ namespace DiscordUI.Modules.MusicModule
         public async Task VolumeUp()
         {
             var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
-            this.Musics.Volume(voiceChannel, 20);
-            Volume += 20;
-            await this.UpdateStateAsync(voiceChannel);
+            var option = this.Musics.Volume(voiceChannel, 20);
+            await this.UpdateStateAsync(voiceChannel, option);
             await this.DeferAsync();
         }
 
@@ -129,9 +121,8 @@ namespace DiscordUI.Modules.MusicModule
         public async Task VolumeDefault()
         {
             var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
-            Musics.Volume(voiceChannel, 0);
-            Volume = 0;
-            await this.UpdateStateAsync(voiceChannel);
+            var option = this.Musics.Volume(voiceChannel, 0);
+            await this.UpdateStateAsync(voiceChannel, option);
             await this.DeferAsync();
         }
 
@@ -139,9 +130,8 @@ namespace DiscordUI.Modules.MusicModule
         public async Task VolumeDown()
         {
             var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
-            Musics.Volume(voiceChannel, -20);
-            Volume -= 20;
-            await this.UpdateStateAsync(voiceChannel);
+            var option = this.Musics.Volume(voiceChannel, -20);
+            await this.UpdateStateAsync(voiceChannel, option);
             await this.DeferAsync();
         }
 
@@ -152,11 +142,11 @@ namespace DiscordUI.Modules.MusicModule
             if(controller is not null) await controller.ModifyAsync(x => { x.Embed = this.Musics.Queue(voiceChannel).Build(); });
         }
 
-        private async Task UpdateStateAsync(IVoiceChannel voiceChannel)
+        private async Task UpdateStateAsync(IVoiceChannel voiceChannel, PlayingOption option)
         {
             await Task.Delay(500);
             var controller = this.Musics.GetController(voiceChannel);
-            if (controller is not null) await controller.ModifyAsync(x => { x.Components = MusicModule.GetComponentBuilder(IsShuffle, LoopType, Volume).Build(); });
+            if (controller is not null) await controller.ModifyAsync(x => { x.Components = MusicModule.GetComponentBuilder(option).Build(); });
         }
 
         public class MusicUrlModal : IModal

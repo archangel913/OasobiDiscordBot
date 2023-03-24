@@ -2,7 +2,7 @@
 
 namespace Domain.Musics.Queue
 {
-    public abstract class QueueLoopMusicQueueBase : IQueueState
+    public class QueueLoopMusicQueueState : IQueueState
     {
         public Music? Dequeue(MusicQueue queue)
         {
@@ -15,11 +15,6 @@ namespace Domain.Musics.Queue
             return queue.Now;
         }
 
-        public IQueueState ChangeLoopState(MusicQueue queue)
-        {
-            return queue.StateFactories.OneSongLoopQueue.Create();
-        }
-
-        public abstract string ToString();
+        public IQueueState Next => new OneSongLoopMusicQueueState();
     }
 }

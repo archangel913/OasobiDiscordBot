@@ -2,7 +2,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using Discord;
-using Domain.Musics;
+using Application.Musics;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using Infrastructure.Loggings;
