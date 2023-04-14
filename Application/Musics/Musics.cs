@@ -76,7 +76,7 @@ namespace Application.Musics
         }
 
 
-        public async Task<string> Play(IVoiceChannel voiceChannel, string url, Func<IVoiceChannel, Task> func)
+        public async Task<bool> Play(IVoiceChannel voiceChannel, string url, Func<IVoiceChannel, Task> func)
         {
             try
             {
@@ -85,44 +85,26 @@ namespace Application.Musics
                 await musicPlayer.ConnecetAsync();
                 var addMusicList = await musicPlayer.Add(url);
                 musicPlayer.Play(func, MusicPlayerProvider.DeleteMusicPlayer);
-                return string.Format(Language["Application.Musics.Musics.Play.AddedMusics"], addMusicList.Count, addMusicList[0].Title);
             }
-            catch (Exception e)
+            catch
             {
-                if (e.Message == "IVoiceChannel is null" || e.Message == "voiceChannel is invalid")
-                {
-                    return Language["Application.Musics.Musics.InvalidVoiceChannelExecption"];
-                }
-                else if (e.Message == "Invalid argument in GetVideoAsync" || e.Message == "Invalid argument in GetPlaylistItemsAsync")
-                {
-                    return Language["Application.Musics.Musics.InvalidYouTubeUrlExecption"];
-                }
-                else
-                {
-                    throw;
-                }
+                return false;
             }
+            return true;
         }
 
-        public string Exit(IVoiceChannel voiceChannel)
+        public bool Exit(IVoiceChannel voiceChannel)
         {
             try
             {
                 var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 musicPlayer.Disconnect();
-                return Language["Application.Musics.Musics.Exit.Exited"];
             }
-            catch (Exception e)
+            catch
             {
-                if (e.Message == "IVoiceChannel is null" || e.Message == "voiceChannel is invalid")
-                {
-                    return Language["Application.Musics.Musics.InvalidVoiceChannelExecption"];
-                }
-                else
-                {
-                    throw;
-                }
+                return false;
             }
+            return true;
         }
 
         public EmbedBuilder Queue(IVoiceChannel voiceChannel)
@@ -223,28 +205,21 @@ namespace Application.Musics
             return count;
         }
 
-        public string Pause(IVoiceChannel voiceChannel)
+        public bool Pause(IVoiceChannel voiceChannel)
         {
             try
             {
                 var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 bool pause = musicPlayer.SwitchPauseState();
-                return pause ? Language["Application.Musics.Musics.Pause.Paused"] : Language["Application.Musics.Musics.Pause.Unpaused"];
             }
-            catch (Exception e)
+            catch
             {
-                if (e.Message == "IVoiceChannel is null" || e.Message == "voiceChannel is invalid")
-                {
-                    return Language["Application.Musics.Musics.InvalidVoiceChannelExecption"];
-                }
-                else
-                {
-                    throw;
-                }
+                return false;
             }
+            return true;
         }
 
-        public string Skip(IVoiceChannel voiceChannel)
+        public bool Skip(IVoiceChannel voiceChannel)
         {
             try
             {
@@ -252,21 +227,13 @@ namespace Application.Musics
                 if (musicPlayer.CanSkip)
                 {
                     musicPlayer.Skip();
-                    return Language["Application.Musics.Musics.Skipped"];
                 }
-                else return Language["Application.Musics.Musics.CouldNotSkip"];
             }
-            catch (Exception e)
+            catch
             {
-                if (e.Message == "IVoiceChannel is null" || e.Message == "voiceChannel is invalid")
-                {
-                    return Language["Application.Musics.Musics.InvalidVoiceChannelExecption"];
-                }
-                else
-                {
-                    throw;
-                }
+                return false;
             }
+            return true;
         }
 
         public PlayingOption Shuffle(IVoiceChannel voiceChannel)
@@ -275,7 +242,7 @@ namespace Application.Musics
             {
                 var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 var shuffleState = musicPlayer.SwitchShuffleState();
-                return new PlayingOption(shuffleState, musicPlayer.MusicQueue.State, musicPlayer.Volume);
+                return new PlayingOption(shuffleState, musicPlayer.MusicQueue.State, musicPlayer.IntegerVolume);
             }
             catch
             {
@@ -289,7 +256,7 @@ namespace Application.Musics
             {
                 var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
                 var loopState = musicPlayer.ChangeLoopState();
-                return new PlayingOption(musicPlayer.MusicQueue.IsShuffle, loopState, musicPlayer.Volume);
+                return new PlayingOption(musicPlayer.MusicQueue.IsShuffle, loopState, musicPlayer.IntegerVolume);
             }
             catch
             {
@@ -321,13 +288,13 @@ namespace Application.Musics
             }
         }
 
-        public PlayingOption Volume(IVoiceChannel voiceChannel, double volume)
+        public PlayingOption Volume(IVoiceChannel voiceChannel, int volume)
         {
             try
             {
                 var musicPlayer = MusicPlayerProvider.GetMusicPlayer(this.Service, voiceChannel);
-                musicPlayer.SetVolume(volume);
-                return new PlayingOption(musicPlayer.MusicQueue.IsShuffle, musicPlayer.MusicQueue.State, musicPlayer.Volume);
+                musicPlayer.AdjustVolume(volume);
+                return new PlayingOption(musicPlayer.MusicQueue.IsShuffle, musicPlayer.MusicQueue.State, musicPlayer.IntegerVolume);
             }
             catch
             {

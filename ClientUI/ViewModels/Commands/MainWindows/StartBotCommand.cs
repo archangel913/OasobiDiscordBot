@@ -22,7 +22,7 @@ namespace ClientUI.ViewModels.Commands.MainWindows
         public override void Execute(object? parameter)
         {
             this.BotClient.StartAsync(this.LogPrintable);
-            this.MainWindowVM.OperatingTimer.Start();
+            this.MainWindowVM.HomeVM.OperatingTimer.Start();
         }
     }
 }

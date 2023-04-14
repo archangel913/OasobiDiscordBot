@@ -11,7 +11,5 @@ namespace Application.Settings
         public string BotLanguage { get; init; }
 
         public string DiscordToken { get; init; }
-
-        public List<GuildId> GuildIds { get; init; } = new List<GuildId>();
     }
 }

@@ -112,7 +112,7 @@ namespace DiscordUI.Modules.MusicModule
         public async Task VolumeUp()
         {
             var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
-            var option = this.Musics.Volume(voiceChannel, 20);
+            var option = this.Musics.Volume(voiceChannel, 1);
             await this.UpdateStateAsync(voiceChannel, option);
             await this.DeferAsync();
         }
@@ -130,7 +130,7 @@ namespace DiscordUI.Modules.MusicModule
         public async Task VolumeDown()
         {
             var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
-            var option = this.Musics.Volume(voiceChannel, -20);
+            var option = this.Musics.Volume(voiceChannel, -1);
             await this.UpdateStateAsync(voiceChannel, option);
             await this.DeferAsync();
         }

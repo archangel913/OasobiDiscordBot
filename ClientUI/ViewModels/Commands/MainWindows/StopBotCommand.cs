@@ -21,8 +21,8 @@ namespace ClientUI.ViewModels.Commands.MainWindows
         {
             MusicPlayerProvider.Clear();
             this.BotClient.StopAsync();
-            this.MainWindowVM.OperatingTimer.Stop();
-            this.MainWindowVM.OperatingTime = new Models.OperatingTime();
+            this.MainWindowVM.HomeVM.OperatingTimer.Stop();
+            this.MainWindowVM.HomeVM.OperatingTime = new Models.OperatingTime();
         }
     }
 }

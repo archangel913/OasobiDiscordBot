@@ -9,12 +9,12 @@ using Application.Bots;
 namespace Infrastructure.Loggings;
 internal class DiscordLogger : IDiscordLogger
 {
-    public DiscordLogger(FileWriter fileWriter)
+    public DiscordLogger(FileRepository fileRepository)
     {
-        this.FileWriter = fileWriter;
+        this.FileRepository = fileRepository;
     }
 
-    private FileWriter FileWriter { get; }
+    private FileRepository FileRepository { get; }
 
     private ILogPrintable? Printable { get; set; }
 
@@ -100,7 +100,7 @@ internal class DiscordLogger : IDiscordLogger
 
     private void WriteLogFile(string text)
     {
-        this.FileWriter.WriteLogFile(@"Log/currentLog.txt", text);
+        this.FileRepository.WriteLogFile(@"Log/currentLog.txt", text);
     }
 
     public void WriteErrorLog(string message)

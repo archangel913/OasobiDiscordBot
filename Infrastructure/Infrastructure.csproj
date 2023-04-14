@@ -15,16 +15,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="LocalFile\SettingsReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="LocalFile\LanguageRepository.txt" />
     <None Remove="LocalFile\NewFile1.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
-    <PackageReference Include="VideoLibrary" Version="3.2.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\実行用\VideoLib\VideoLib.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
 
