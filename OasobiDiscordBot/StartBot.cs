@@ -218,7 +218,7 @@ namespace OasobiDiscordBot
 
         private static BotSettings GetSettigs()
         {
-            var reader = new SettingsReader();
+            var reader = new SettingsRepository();
             if (reader.TryGetSettings(out BotSettings botSettings))
             {
                 return botSettings;

@@ -44,7 +44,9 @@ namespace Domain.Musics
 
         private bool IsExit { get; set; } = false;
 
-        public double Volume { get; set; } = 0.1;
+        private double CalculatedVolume { get; set; } = 0.1;
+
+        public int IntegerVolume { get; set; } = 20;
 
         public IUserMessage? Controller { get; set; }
 
@@ -87,6 +89,14 @@ namespace Domain.Musics
         {
             this.PlayTask ??= Task.Run(async () => await PlayAsync(func, action));
         }
+
+        /**
+         * 実際に曲を再生する＝play
+         * ではなく、
+         * キューに曲を追加する＝Playなのでは
+         * 
+         * 具体的な手段についてはドメイン層ではなくインフラ層送りでいいかもしれない
+         */
 
         private async Task PlayAsync(Func<IVoiceChannel, Task> updateQueue, Action<MusicPlayer> deleteMusicPlayer)
         {
@@ -147,7 +157,7 @@ namespace Domain.Musics
                 deleteMusicPlayer(this);
             }
         }
-
+        
         private async Task ReadInputStreamToEncoderAsync(string url, Stream encoderInputStream)
         {
             try
@@ -214,10 +224,18 @@ namespace Domain.Musics
             this.IsSkip = true;
         }
 
-        public void SetVolume(double volume)
+        public void AdjustVolume(int volume)
         {
-            if (volume == 0) this.Volume = 0.1;
-            else this.Volume *= Math.Pow(10, volume / 100);
+            if (volume == 0)
+            {
+                this.CalculatedVolume = 0.1;
+                this.IntegerVolume = 20;
+            }
+            else
+            {
+                this.CalculatedVolume *= Math.Pow(10, (double)volume / 5);
+                this.IntegerVolume += volume;
+            }
         }
 
         private void CalcVolume(byte[] buffer, int blockSize)
@@ -227,9 +245,9 @@ namespace Domain.Musics
             {
                 tmp = buffer[i + 1];
                 tmp = (short)((tmp << 8) | buffer[i]);
-                if (((this.Volume * tmp) < 0) && (tmp > 0)) tmp = short.MaxValue;
-                else if (((this.Volume * tmp) > 0) && (tmp < 0)) tmp = short.MinValue;
-                else tmp = (short)(this.Volume * tmp);
+                if (((this.CalculatedVolume * tmp) < 0) && (tmp > 0)) tmp = short.MaxValue;
+                else if (((this.CalculatedVolume * tmp) > 0) && (tmp < 0)) tmp = short.MinValue;
+                else tmp = (short)(this.CalculatedVolume * tmp);
                 buffer[i] = (byte)tmp;
                 buffer[i + 1] = (byte)(tmp >> 8);
             }

@@ -27,7 +27,7 @@ namespace DiscordUI.Modules.MusicModule
                 await this.DeleteOriginalResponseAsync();
                 var voiceChannel = ((SocketGuildUser)Context.User).VoiceChannel;
                 if (voiceChannel is null) throw new Exception(Musics.Language["Application.Musics.Musics.InvalidVoiceChannelExecption"]);
-                var componentBuilder = GetComponentBuilder(new PlayingOption(false, new NormalMusicQueueState(), 0));
+                var componentBuilder = GetComponentBuilder(new PlayingOption(false, new NormalMusicQueueState(), 20));
 
                 var builder = Musics.Queue(voiceChannel);
 

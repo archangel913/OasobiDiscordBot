@@ -2,31 +2,20 @@
 using System.Configuration;
 using Application.Interface;
 using Application.Settings;
+using Newtonsoft.Json.Linq;
 using Version = Application.Settings.Version;
 
 namespace Infrastructure.LocalFile
 {
-    public class SettingsReader : ISettingsReader
+    public class SettingsRepository : ISettingsRepository
     {
         public bool TryGetSettings(out BotSettings botSettings)
         {
-            bool canRead = this.TryReadConfig("GuildId", out var guildIdString);
-
-            var guildIds = new List<GuildId>();
-            foreach (var idString in guildIdString.Split(','))
-            {
-                if (!ulong.TryParse(idString, out ulong id))
-                {
-                    botSettings = new BotSettings();
-                    return false;
-                }
-                guildIds.Add(new GuildId(id));
-            }
-            canRead &= this.TryReadConfig("BotName", out string name);
+            bool canRead = this.TryReadConfig("BotName", out string name);
             canRead &= this.TryReadConfig("BotLanguage", out string language);
             canRead &= this.TryReadConfig("DiscordToken", out string token);
             canRead &= this.TryReadConfig("BotVersion", out string version);
-            if (!canRead)
+            if (!canRead || token == "")
             {
                 botSettings = new BotSettings();
                 return false;
@@ -37,7 +26,6 @@ namespace Infrastructure.LocalFile
                 Version = new Version(version),
                 BotLanguage = language,
                 DiscordToken = token,
-                GuildIds = guildIds
             };
             return true;
         }
@@ -55,10 +43,29 @@ namespace Infrastructure.LocalFile
                 BotName = "ExperimentOasobiDiscordBot",
                 Version = new Version("0.0.0"),
                 BotLanguage = "English",
-                DiscordToken = discordToken,
-                GuildIds = new List<GuildId>() { new GuildId(0) }
+                DiscordToken = discordToken
             };
             return true;
+        }
+
+        public void Save(BotSettings newBotSettings)
+        {
+            //ToDo : YouTubeAPIを追加する
+            try
+            {
+                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                var settings = configFile.AppSettings.Settings;
+                if (settings["DiscordToken"] != null)
+                {
+                    settings["DiscordToken"].Value = newBotSettings.DiscordToken;
+                }
+                configFile.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         private bool TryReadConfig(string key, out string result)

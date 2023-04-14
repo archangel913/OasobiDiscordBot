@@ -2,8 +2,10 @@
 
 namespace Application.Interface
 {
-    public interface ISettingsReader
+    public interface ISettingsRepository
     {
         public bool TryGetSettings(out BotSettings result);
+
+        public void Save(BotSettings newBotSettings);
     }
 }

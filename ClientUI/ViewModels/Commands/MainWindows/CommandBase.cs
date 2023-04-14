@@ -9,9 +9,9 @@ namespace ClientUI.ViewModels.Commands.MainWindows
 {
     abstract class CommandBase : ICommand
     {
-        public CommandBase(MainWindowVM mainWindowVM) 
-        { 
-            this.MainWindowVM = mainWindowVM;
+        public CommandBase(MainWindowVM mainWindowVM)
+        {
+            MainWindowVM = mainWindowVM;
         }
 
         public event EventHandler? CanExecuteChanged;

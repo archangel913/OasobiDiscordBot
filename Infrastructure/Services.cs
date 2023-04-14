@@ -16,20 +16,20 @@ namespace Infrastructure
     {
         public IServiceProvider RegisterServices(IServiceCollection services, BotSettings settings, IEnumerable<Assembly> assemblies)
         {
-            services.AddTransient<IFileReader,FileReader>();
+            services.AddTransient<IFileRepository,FileRepository>();
             services.AddTransient<IAudioSender, AudioSender>();
             services.AddTransient<IHttp, Http.Http>();
             services.AddTransient<IVideoLib, Video>();
-            services.AddTransient<IFileWriter, FileWriter>();
+            services.AddTransient<IFileRepository, FileRepository>();
             services.AddTransient<IGetMusic, GetMusic>();
-            services.AddSingleton<ISettingsReader, SettingsReader>();
+            services.AddSingleton<ISettingsRepository, SettingsRepository>();
             services.AddSingleton<ILanguageRepository, LanguageRepository>(factory =>
             {
                 return new LanguageRepository(settings);
             });
-            var fileWriter = new FileWriter();
-            services.AddTransient<IFileWriter, FileWriter>(value => fileWriter);
-            services.AddSingleton<IDiscordLogger, DiscordLogger>(value => new DiscordLogger(fileWriter));
+            var fileRepository = new FileRepository();
+            services.AddTransient<IFileRepository, FileRepository>(value => fileRepository);
+            services.AddSingleton<IDiscordLogger, DiscordLogger>(value => new DiscordLogger(fileRepository));
 
             var bot = new BotClient(settings, services);
             bot.SetModulesAsync(assemblies).Wait();

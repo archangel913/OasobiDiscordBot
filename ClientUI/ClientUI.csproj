@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ViewModels\NewFile1.txt" />
     <None Remove="Views\MainWindow.xaml" />
   </ItemGroup>
 

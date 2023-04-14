@@ -29,7 +29,7 @@ public class BotClient : IAsyncBotClient
 
         this.Client = GetInitializedClient();
         this.Provider = services.BuildServiceProvider();
-        this.DiscordLogger = new DiscordLogger(new LocalFile.FileWriter());
+        this.DiscordLogger = new DiscordLogger(new LocalFile.FileRepository());
         this.InteractionService = new InteractionService(Client.Rest);
     }
 
@@ -58,6 +58,7 @@ public class BotClient : IAsyncBotClient
         await StopAsync();
         await StartAsync(printable);
     }
+
 
     private async Task ConnectAsync()
     {
