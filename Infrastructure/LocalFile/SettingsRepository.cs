@@ -13,9 +13,10 @@ namespace Infrastructure.LocalFile
         {
             bool canRead = this.TryReadConfig("BotName", out string name);
             canRead &= this.TryReadConfig("BotLanguage", out string language);
-            canRead &= this.TryReadConfig("DiscordToken", out string token);
+            canRead &= this.TryReadConfig("DiscordToken", out string discordtoken);
+            canRead &= this.TryReadConfig("YouTubeApiKey", out string youtubetoken);
             canRead &= this.TryReadConfig("BotVersion", out string version);
-            if (!canRead || token == "")
+            if (!canRead || discordtoken == "")
             {
                 botSettings = new BotSettings();
                 return false;
@@ -25,7 +26,8 @@ namespace Infrastructure.LocalFile
                 BotName = name,
                 Version = new Version(version),
                 BotLanguage = language,
-                DiscordToken = token,
+                DiscordToken = discordtoken,
+                YouTubeToken = youtubetoken,
             };
             return true;
         }
@@ -33,7 +35,8 @@ namespace Infrastructure.LocalFile
         public bool TryGetExperimentalSettings(out BotSettings botSettings)
         {
             string? discordToken = Environment.GetEnvironmentVariable("EXPERIMENTAL_DISCORD_BOT_TOKEN");
-            if (discordToken is null) 
+            string? youtubeToken = Environment.GetEnvironmentVariable("EXPERIMENTAL_YOUTUBE_API_TOKEN");
+            if (discordToken is null || youtubeToken is null) 
             {
                 botSettings = new BotSettings();
                 return false;
@@ -43,7 +46,8 @@ namespace Infrastructure.LocalFile
                 BotName = "ExperimentOasobiDiscordBot",
                 Version = new Version("0.0.0"),
                 BotLanguage = "English",
-                DiscordToken = discordToken
+                DiscordToken = discordToken,
+                YouTubeToken = youtubeToken,
             };
             return true;
         }
@@ -58,6 +62,10 @@ namespace Infrastructure.LocalFile
                 if (settings["DiscordToken"] != null)
                 {
                     settings["DiscordToken"].Value = newBotSettings.DiscordToken;
+                }
+                if (settings["YouTubeApiKey"] != null)
+                {
+                    settings["YouTubeApiKey"].Value = newBotSettings.YouTubeToken;
                 }
                 configFile.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);

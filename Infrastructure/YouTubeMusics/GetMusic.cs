@@ -2,106 +2,151 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Domain.Musics;
 using Domain.Interface;
+using Domain.Musics.YouTubeMusics;
+using Domain.Musics.YouTubeMusics.YoutubePlaylists;
+using Domain.Musics.YouTubeMusics.YoutubeVideos;
+using Application.Interface;
 
 namespace Infrastructure.YouTubeMusics
 {
     internal class GetMusic : IGetMusic
     {
+        private readonly string YoutubeBaseUrl = @"https://www.youtube.com/watch?v=";
+
+        private readonly string YoutubeApiKey;
+
+        public GetMusic(string key)
+        {
+            this.YoutubeApiKey = key;
+        }
+
         public async Task<List<Music>> GetMusicsAsync(string url)
         {
-            var client = new Http.Http();
-
-            string request = YouTubeURLFactory.CreateRequestURL(url);
-
-            var response = await client.GetAsync(request);
-            var json = await response.Content.ReadAsStringAsync();
-
-            var videos = Regex.Match(json, "\"PLAYER_VARS\":{.*\"video_id\"");
-            String strVideos = videos.Value
-                .Replace("\",\"video_id\"", "")
-                .Replace("\"PLAYER_VARS\":{\"embedded_player_response\":\"", "")
-                .Replace("\\", "")
-                .Replace("u0027", "'");
-
             var musicList = new List<Music>();
-            JObject jsonObj = JObject.Parse(strVideos);
+            using (var client = new HttpClient())
+            {
+                var factory = new YouTubeApiURLFactory(this.YoutubeApiKey);
+                string nextPageToken = "";
 
-            if (jsonObj["embedPreview"]["thumbnailPreviewRenderer"]["playlist"] != null)
-            {
-                foreach (JObject v in jsonObj["embedPreview"]["thumbnailPreviewRenderer"]["playlist"]["playlistPanelRenderer"]["contents"])
+                while (true)
                 {
-                    string title = "";
-                    foreach (JObject t in v["playlistPanelVideoRenderer"]["title"]["runs"])
+                    var request = factory.CreateRequestVideoUrl(url, nextPageToken);
+                    var response = await client.GetAsync(request);
+                    var json = await response.Content.ReadAsStringAsync();
+                    YoutubeApiStructure youtubeVideos = new();
+                    try
                     {
-                        title = t["text"].ToString();
+                        if (request.Contains("playlist"))
+                        {
+                            youtubeVideos = JsonSerializer.Deserialize<YoutubePlaylists>(json)!;
+                        }
+                        else
+                        {
+                            youtubeVideos = JsonSerializer.Deserialize<YouTubeVideos>(json)!;
+                        }
+
                     }
-                    string id = v["playlistPanelVideoRenderer"]["videoId"].ToString();
-                    musicList.Add(new Music(title, @$"https://www.youtube.com/watch?v={id}"));
-                }
-            }
-            else
-            {
-                foreach (JObject title in jsonObj["embedPreview"]["thumbnailPreviewRenderer"]["title"]["runs"])
-                {
-                    musicList.Add(new Music(title["text"].ToString(), YouTubeURLFactory.CreateWatchableURL(url)));
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                    if (youtubeVideos is YouTubeVideos)
+                    {
+                        foreach (var item in ((YouTubeVideos)youtubeVideos).items)
+                        {
+                            var id = item.id;
+                            var title = item.snippet.title;
+                            musicList.Add(new Music(title, this.YoutubeBaseUrl + id));
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in ((YoutubePlaylists)youtubeVideos).items)
+                        {
+                            var snippet = item.snippet;
+                            var id = snippet.resourceId.videoId;
+                            var title = snippet.title;
+                            musicList.Add(new Music(title, this.YoutubeBaseUrl + id));
+                        }
+                    }
+                    if(youtubeVideos.nextPageToken == "" || youtubeVideos.nextPageToken is null)
+                    {
+                        break;
+                    }
+                    nextPageToken = youtubeVideos.nextPageToken;
                 }
             }
             return musicList;
         }
 
         /*
-        引数 https://www.youtube.com/*
         普通の動画（短縮）https://youtu.be/_wBtgy9k6v4
         普通の動画（普通の）https://www.youtube.com/watch?v=_wBtgy9k6v4
         プレイリスト（普通の）：https://www.youtube.com/playlist?list=PL6gpkvSpVRsdWdqYYCPXghmSF1DToiTUv
         プレイリスト（短縮）：https://youtube.com/playlist?list=PL6gpkvSpVRsdWdqYYCPXghmSF1DToiTUv
         ショート（普通の）：https://www.youtube.com/shorts/M6qG56gv0uY
         ショート（短縮）：https://youtube.com/shorts/M6qG56gv0uY?feature=share
-        ：
-        モドリッチ
-        https://www.youtube.com/embed/<videoId>
-        https://www.youtube.com/embed/playlist?list=<playListId>
         */
 
 
-        private class YouTubeURLFactory
+        private class YouTubeApiURLFactory
         {
+            public YouTubeApiURLFactory(string key)
+            {
+                this.Key += key;
+            }
+
             private static IReadOnlyCollection<string> Patterns { get; } = new List<string>()
             {
                 "https://youtu.be/",
                 "https://www.youtube.com/watch?v=",
-                "https://youtube.com/",
-                "https://www.youtube.com/",
+                "https://www.youtube.com/shorts/",
+                "https://youtube.com/shorts/",
+                "https://youtube.com/playlist?list=",
+                "https://www.youtube.com/playlist?list="
             };
 
-            private static string EmbedURL { get; } = "https://www.youtube.com/embed/";
+            private readonly int VideoIdLength = 11;
 
-            private static string WatchableURL { get; } = "https://www.youtube.com/watch?v=";
+            private readonly string BaseUrl = @"https://www.googleapis.com/youtube/v3/";
 
-            public static string CreateRequestURL(string baseURL)
+            private readonly string Part = @"part=snippet";
+
+            private readonly string Id = @"id=";
+
+            private readonly string PlaylistId = @"playlistId=";
+
+            private readonly string Key = @"key=";
+
+            public string CreateRequestVideoUrl(string url, string nextPageToken = "")
             {
-                string url = baseURL;
                 foreach (var pattern in Patterns)
                 {
-                    string tmp = new string(url);
-                    url = baseURL.Replace(pattern, EmbedURL);
-                    if (url != tmp) { break; }
+                    string originalUrl = url;
+                    url = url.Replace(pattern, "");
+                    if (url != originalUrl) { break; }
                 }
-                url = url.Replace("shorts/", "");
-                url = url.Replace("?feature=share", "");
-                return url;
+                var id = url.Split("&")[0];
+                string request;
+                if (id.Length == this.VideoIdLength)
+                {
+                    request = this.BaseUrl + "videos" + "?" + this.Part + "&" + this.Id + id + "&" + this.Key;
+                }
+                else
+                {
+                    request = this.BaseUrl + "playlistItems" + "?" + this.Part + "&" + this.PlaylistId + id + "&" + this.Key + "&maxResults=50";
+                    if (nextPageToken != "")
+                    {
+                        request += "&pageToken=" + nextPageToken;
+                    }
+                }
+                return request;
             }
-
-            public static string CreateWatchableURL(string url)
-            {
-                string id = CreateRequestURL(url).Replace(EmbedURL, "");
-                return $"{WatchableURL}{id}";
-            } 
         }
     }
 }

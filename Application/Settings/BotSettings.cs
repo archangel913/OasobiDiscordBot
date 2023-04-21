@@ -11,5 +11,7 @@ namespace Application.Settings
         public string BotLanguage { get; init; }
 
         public string DiscordToken { get; init; }
+
+        public string YouTubeToken { get; init; }
     }
 }

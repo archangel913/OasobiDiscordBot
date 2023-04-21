@@ -22,7 +22,8 @@ namespace ClientUI.ViewModels.Commands.MainWindows
         {
             var newBotSettings = new BotSettings()
             {
-                DiscordToken = this.MainWindowVM.SettingsVM.DiscordToken
+                DiscordToken = this.MainWindowVM.SettingsVM.DiscordToken,
+                YouTubeToken = this.MainWindowVM.SettingsVM.YoutubeToken,
             };
             this.SettingsRepository.Save(newBotSettings);
         }

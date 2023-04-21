@@ -16,12 +16,15 @@ namespace Infrastructure
     {
         public IServiceProvider RegisterServices(IServiceCollection services, BotSettings settings, IEnumerable<Assembly> assemblies)
         {
-            services.AddTransient<IFileRepository,FileRepository>();
+            services.AddTransient<IFileRepository, FileRepository>();
             services.AddTransient<IAudioSender, AudioSender>();
-            services.AddTransient<IHttp, Http.Http>();
             services.AddTransient<IVideoLib, Video>();
             services.AddTransient<IFileRepository, FileRepository>();
-            services.AddTransient<IGetMusic, GetMusic>();
+            var musicGetter = new GetMusic(settings.YouTubeToken);
+            services.AddSingleton<IGetMusic, GetMusic>(factry =>
+            {
+                return musicGetter;
+            });
             services.AddSingleton<ISettingsRepository, SettingsRepository>();
             services.AddSingleton<ILanguageRepository, LanguageRepository>(factory =>
             {
