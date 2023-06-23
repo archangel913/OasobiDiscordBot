@@ -54,7 +54,6 @@ namespace Infrastructure.LocalFile
 
         public void Save(BotSettings newBotSettings)
         {
-            //ToDo : YouTubeAPIを追加する
             try
             {
                 var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);

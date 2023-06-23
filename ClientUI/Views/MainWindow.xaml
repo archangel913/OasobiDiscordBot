@@ -152,13 +152,21 @@
                     <RowDefinition Height="9*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <StackPanel>
+                <StackPanel Cursor="">
                     <TextBlock Margin="10" Text="YouTube API トークン" />
                     <TextBox Text="{Binding SettingsVM.YoutubeToken}"/>
                     <TextBlock Margin="10" Text="Discord Bot トークン" />
                     <TextBox Text="{Binding SettingsVM.DiscordToken}"/>
+                    <TextBlock Margin="10" Grid.Row="1" Text="稼働時間" />
                 </StackPanel>
                 <Button Grid.Row="1" Width="100" Content="設定を保存する" Command="{Binding SettingsVM.SaveTokenCmd}" Cursor="Hand"/>
+                <materialDesign:Snackbar
+                    IsActive="{Binding SettingsVM.IsSettingsUpdated}" >
+                    <materialDesign:SnackbarMessage
+                        Content="設定はアプリケーションの再起動後に反映されます。"
+                        ActionContent="OK" 
+                        ActionCommand="{Binding SettingsVM.CloseSettingsSnackBarCmd}" />
+                </materialDesign:Snackbar>
             </Grid>
         </TabItem>
     </TabControl>

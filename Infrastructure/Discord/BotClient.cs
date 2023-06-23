@@ -59,7 +59,6 @@ public class BotClient : IAsyncBotClient
         await StartAsync(printable);
     }
 
-
     private async Task ConnectAsync()
     {
         await this.Client.LoginAsync(TokenType.Bot, this.Settings.DiscordToken);

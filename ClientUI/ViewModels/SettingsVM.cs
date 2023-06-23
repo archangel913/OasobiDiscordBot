@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Application.Bots;
 using Application.Interface;
+using Application.Settings;
 using ClientUI.Models;
 using ClientUI.ViewModels.Commands.MainWindows;
 using Discord.Rest;
@@ -18,15 +19,34 @@ namespace ClientUI.ViewModels
     {
         public SettingsVM(MainWindowVM parent, IServiceProvider serviceProvider)
         {
-            this.YoutubeToken = "";
-            this.DiscordToken = "";
-            this.SaveTokenCmd = new SaveSettingsCmd(parent, serviceProvider.GetRequiredService<ISettingsRepository>());
+            var settingsRepository = serviceProvider.GetRequiredService<ISettingsRepository>();
+
+            BotSettings botSettings;
+            settingsRepository.TryGetSettings(out botSettings);
+
+            this.YoutubeToken = botSettings.YouTubeToken;
+            this.DiscordToken = botSettings.DiscordToken;
+            this.SaveTokenCmd = new SaveSettingsCmd(parent, settingsRepository);
+            this.CloseSettingsSnackBarCmd = new CloseSettingsSnackBarCmd(parent);
         }
 
         public CommandBase SaveTokenCmd { get; }
 
+        public CommandBase CloseSettingsSnackBarCmd { get; }
+
         public string YoutubeToken { get; set; }
 
         public string DiscordToken { get; set; }
+
+        private bool isSettingsUpdated = false;
+        public bool IsSettingsUpdated
+        {
+            get => this.isSettingsUpdated;
+            set
+            {
+                this.isSettingsUpdated = value;
+                OnPropertyChanged(nameof(this.IsSettingsUpdated));
+            }
+        }
     }
 }

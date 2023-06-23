@@ -26,6 +26,7 @@ namespace ClientUI.ViewModels.Commands.MainWindows
                 YouTubeToken = this.MainWindowVM.SettingsVM.YoutubeToken,
             };
             this.SettingsRepository.Save(newBotSettings);
+            MainWindowVM.SettingsVM.IsSettingsUpdated = true;
         }
     }
 }
