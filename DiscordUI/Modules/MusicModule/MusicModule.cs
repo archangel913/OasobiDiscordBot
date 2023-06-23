@@ -18,7 +18,7 @@ namespace DiscordUI.Modules.MusicModule
 
         private Musics Musics { get; }
 
-        [SlashCommand("musicplayer", "experimental musicplayer")]
+        [SlashCommand("musicplayer", "send the control panel for the music player.")]
         public async Task MusicPlayer()
         {
             try
@@ -36,21 +36,6 @@ namespace DiscordUI.Modules.MusicModule
                 var controller = Musics.GetController(voiceChannel);
                 if (controller is not null) await controller.DeleteAsync();
                 Musics.SetController(voiceChannel, controllerMessage);
-            }
-            catch (Exception e)
-            {
-                await this.ReplyAsync(e.Message);
-                throw;
-            }
-        }
-
-        [SlashCommand("remove", "Remove the music from the queue.")]
-        public async Task Remove(int index)
-        {
-            try
-            {
-                var msg = Musics.Remove(((SocketGuildUser)Context.User).VoiceChannel, index);
-                await this.RespondAsync(msg);
             }
             catch (Exception e)
             {

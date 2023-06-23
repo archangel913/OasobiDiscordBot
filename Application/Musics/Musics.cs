@@ -152,7 +152,7 @@ namespace Application.Musics
             if (page < 1)
             {
                 nowMusicFieldBuilder.WithName(Language["Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorTitle"]);
-                nowMusicFieldBuilder.WithValue(Language["Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorMessage"]);
+                nowMusicFieldBuilder.WithValue(Language["Application.Musics.Musics.GetWaitingMusicFieldBuilder.Doesn'tHave"]);
             }
             else if (nowNullable is null)
             {

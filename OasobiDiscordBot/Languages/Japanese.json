@@ -1,34 +1,16 @@
 ﻿{
-    "KeySentencePairs": {
-        "DiscordUI.Modules.MusicModule.MusicModule.Play.Wait": "Playコマンドが実行されました。しばらくお待ちください。",
-        "DiscordUI.Modules.MusicModule.MusicModule.Exit.Wait": "終了中。",
-        "DiscordUI.Modules.MusicModule.MusicModule.Queue.SentQueue": "キュー",
-        "Application.Musics.Musics.Play.AddedMusics": "{0}曲追加されました。 最初の曲は{1}です。",
-        "Application.Musics.Musics.Exit.Exited": "音楽プレイヤーを終了しました。",
-        "Application.Musics.Musics.Queue.QueueTitle": "キュー",
-        "Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorTitle": "エラー!",
-        "Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorMessage": "ページ番号には\"0\"以上の値を指定してください。",
-        "Application.Musics.Musics.GetNowMusicFieldBuilder.NotPlayingTitle": "曲が再生されていません!",
-        "Application.Musics.Musics.GetNowMusicFieldBuilder.NotPlayingMessage": "このコマンドを実行する前に`/play`コマンドを実行してください。",
-        "Application.Musics.Musics.GetNowMusicFieldBuilder.NowPlayingTitle": "再生中",
-        "Application.Musics.Musics.GetWaitingMusicFieldBuilder.TitleOfWaiting": "再生待ちはありません。",
-        "Application.Musics.Musics.GetWaitingMusicFieldBuilder.TitleOfIsNoWaiting": "再生待ち一覧",
-        "Application.Musics.Musics.GetWaitingMusicFieldBuilder.Doesn'tHave": "ページ{0}に曲はありません。",
-        "Application.Musics.Musics.GetWaitingMusicFieldBuilder.CurrentPageInfo": "\n\n現在のページ: {0}/{1}.",
-        "Application.Musics.Musics.Pause.Paused": "一時停止しました。",
-        "Application.Musics.Musics.Pause.Unpaused": "再開します。",
-        "Application.Musics.Musics.Skipped": "スキップしました。",
-        "Application.Musics.Musics.CouldNotSkip": "スキップできませんでした。 音楽が流れるまでお待ちください。",
-        "Application.Musics.Musics.ShuffleOn": "キューをシャッフルしました。",
-        "Application.Musics.Musics.ShuffleOff": "シャッフルを解除しました。",
-        "Application.Musics.Musics.Remove.Removed": "{0}がキューから削除されました。",
-        "Application.Musics.Musics.Remove.CouldNotRemove": "キューの範囲外の番号が指定されたため削除できませんでした。",
-        "Application.Musics.Musics.SetVolume": "音量に{0}を加算しました。",
-        "Application.Musics.Musics.SetDefaltVolume": "音量を初期値に設定しました。",
-        "Application.Musics.Musics.InvalidVoiceChannelExecption": "コマンドを実行できませんでした。ボットと同じボイスチャンネルに参加してくだい。\nボットをボイスチャンネルに参加させるには、ボイスチャンネルに参加した後、\"play\"コマンドを実行してください。",
-        "Application.Musics.Musics.InvalidYouTubeUrlExecption": "YouTubeのURLが正しくありません。",
-        "Application.Musics.Queue.NormalMusicQueue.NormalMusicQueueName": "ノーマル",
-        "Application.Musics.Queue.QueueLoopMusicQueue.QueueLoopMusicQueueName": "キューループ",
-        "Application.Musics.Queue.OneSongLoopMusicQueue.OneSongLoopMusicQueueName": "1曲ループ"
-    }
+  "KeySentencePairs": {
+    "DiscordUI.Modules.MusicModule.MusicModule.Queue.SentQueue": "キュー",
+    "Application.Musics.Musics.Queue.QueueTitle": "キュー",
+    "Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorTitle": "エラー!",
+    "Application.Musics.Musics.GetNowMusicFieldBuilder.NotPlayingTitle": "曲が再生されていません!",
+    "Application.Musics.Musics.GetNowMusicFieldBuilder.NotPlayingMessage": "曲を追加してください。",
+    "Application.Musics.Musics.GetNowMusicFieldBuilder.NowPlayingTitle": "再生中",
+    "Application.Musics.Musics.GetWaitingMusicFieldBuilder.TitleOfWaiting": "再生待ちはありません。",
+    "Application.Musics.Musics.GetWaitingMusicFieldBuilder.TitleOfIsNoWaiting": "再生待ち一覧",
+    "Application.Musics.Musics.GetWaitingMusicFieldBuilder.Doesn'tHave": "ページ{0}に曲はありません。",
+    "Application.Musics.Musics.GetWaitingMusicFieldBuilder.CurrentPageInfo": "\n\n現在のページ: {0}/{1}.",
+    "Application.Musics.Musics.InvalidVoiceChannelExecption": "コマンドを実行できませんでした。ボットと同じボイスチャンネルに参加してくだい。\nボットをボイスチャンネルに参加させるには、ボイスチャンネルに参加した後、\"musicplayer\"コマンドを実行してください。",
+    "Application.Musics.Musics.InvalidYouTubeUrlExecption": "YouTubeのURLが正しくありません。"
+  }
 }
