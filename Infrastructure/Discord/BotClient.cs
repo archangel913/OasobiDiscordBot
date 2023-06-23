@@ -41,7 +41,7 @@ public class BotClient : IAsyncBotClient
         this.DiscordLogger.WriteBotSystemLog("Language : " + Settings.BotLanguage);
         this.Client.InteractionCreated += ExecuteSlashCommand;
         this.Client.Ready += RegisterCommands;
-        this.Client.Ready += VoiceChannelUpdate;
+        //this.Client.Ready += VoiceChannelUpdate;
         await ConnectAsync();
     }
 

@@ -74,7 +74,7 @@ namespace Domain.Musics
         public async Task UpdateAsync(IVoiceChannel voiceChannel)
         {
             this.Voicechannel = voiceChannel;
-            await AudioSender.UpdateAsync(voiceChannel);
+            await AudioSender.UpdateAsync();
         }
 
         public void Disconnect()
@@ -100,64 +100,57 @@ namespace Domain.Musics
 
         private async Task PlayAsync(Func<IVoiceChannel, Task> updateQueue, Action<MusicPlayer> deleteMusicPlayer)
         {
-            try
+            var now = MusicQueue.Dequeue();
+            while (now is not null && IsExit is false)
             {
-                var now = MusicQueue.Dequeue();
-                while (now is not null && IsExit is false)
+                var encoder = Encoder.VideoToWave();
+                _ = Task.Run(() => ReadInputStreamToEncoderAsync(now.Url, encoder.StandardInput.BaseStream));
+                var encodedStream = encoder.StandardOutput.BaseStream;
+                int blockSize = 3840;
+                byte[] buffer = new byte[blockSize];
+                int byteCount;
+                this.CanSkip = true;
+                this.Logger.WriteBotSystemLog(now.Title + " is playing in " + this.GuildName + "'s " + this.ChannelName);
+                while (((byteCount = encodedStream.Read(buffer, 0, blockSize)) > 0) && IsExit is false)
                 {
-                    var encoder = Encoder.VideoToWave();
-                    _ = Task.Run(() => ReadInputStreamToEncoderAsync(now.Url, encoder.StandardInput.BaseStream));
-                    var encodedStream = encoder.StandardOutput.BaseStream;
                     try
                     {
-                        int blockSize = 3840;
-                        byte[] buffer = new byte[blockSize];
-                        int byteCount;
-                        this.CanSkip = true;
-                        this.Logger.WriteBotSystemLog(now.Title + " is playing in " + this.GuildName + "'s " + this.ChannelName);
-                        while (((byteCount = encodedStream.Read(buffer, 0, blockSize)) > 0) && IsExit is false)
+                        CalcVolume(buffer, blockSize);
+                        if (byteCount < blockSize)
                         {
-                            CalcVolume(buffer, blockSize);
-                            if (byteCount < blockSize)
-                            {
-                                for (int i = byteCount; i < blockSize; i++)
-                                    buffer[i] = 0;
-                            }
-                            if (this.IsSkip)
-                            {
-                                this.IsSkip = false;
-                                break;
-                            }
-                            while (this.IsPause)
-                            {
-                                await Task.Delay(100);
-                            }
-                            await AudioSender.SendMusic(buffer, 0, blockSize);
+                            for (int i = byteCount; i < blockSize; i++)
+                                buffer[i] = 0;
                         }
+                        if (this.IsSkip)
+                        {
+                            this.IsSkip = false;
+                            break;
+                        }
+                        while (this.IsPause)
+                        {
+                            await Task.Delay(100);
+                        }
+                        await AudioSender.SendMusic(buffer, 0, blockSize);
                     }
                     catch (Exception e)
                     {
+                        await this.AudioSender.UpdateAsync();
+                        Console.WriteLine("at MusicPlayer line 140");
                         Console.WriteLine(e);
                     }
-                    finally
-                    {
-                        this.CanSkip = false;
-                        await AudioSender.FlushAsync();
-                        encoder.Dispose();
-                        encodedStream.Dispose();
-                    }
-                    now = MusicQueue.Dequeue();
-                    await updateQueue(Voicechannel);
                 }
+                this.CanSkip = false;
+                await AudioSender.FlushAsync();
+                encoder.Dispose();
+                encodedStream.Dispose();
+                now = MusicQueue.Dequeue();
+                await updateQueue(Voicechannel);
             }
-            finally
-            {
-                await this.AudioSender.DisconnectAsync();
-                if (this.Controller is not null) await this.Controller.DeleteAsync();
-                deleteMusicPlayer(this);
-            }
+            await this.AudioSender.DisconnectAsync();
+            if (this.Controller is not null) await this.Controller.DeleteAsync();
+            deleteMusicPlayer(this);
         }
-        
+
         private async Task ReadInputStreamToEncoderAsync(string url, Stream encoderInputStream)
         {
             try
