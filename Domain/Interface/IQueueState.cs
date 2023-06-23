@@ -5,10 +5,8 @@ namespace Domain.Interface
 {
     public interface IQueueState
     {
-        IQueueState ChangeLoopState(MusicQueue queue);
-
         Music? Dequeue(MusicQueue queue);
 
-        string ToString();
+        IQueueState Next { get; }
     }
 }

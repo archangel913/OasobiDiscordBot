@@ -1,13 +1,8 @@
 {
     "KeySentencePairs": {
-        "UI.Modules.MusicModule.MusicModule.Play.Wait": "",
-        "UI.Modules.MusicModule.MusicModule.Exit.Wait": "",
-        "UI.Modules.MusicModule.MusicModule.Queue.SentQueue": "",
-        "Application.Musics.Musics.Play.AddedMusics": "",
-        "Application.Musics.Musics.Exit.Exited": "",
+        "DiscordUI.Modules.MusicModule.MusicModule.Queue.SentQueue": "",
         "Application.Musics.Musics.Queue.QueueTitle": "",
         "Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorTitle": "",
-        "Application.Musics.Musics.GetNowMusicFieldBuilder.ErrorMessage": "",
         "Application.Musics.Musics.GetNowMusicFieldBuilder.NotPlayingTitle": "",
         "Application.Musics.Musics.GetNowMusicFieldBuilder.NotPlayingMessage": "",
         "Application.Musics.Musics.GetNowMusicFieldBuilder.NowPlayingTitle": "",
@@ -15,20 +10,7 @@
         "Application.Musics.Musics.GetWaitingMusicFieldBuilder.TitleOfIsNoWaiting": "",
         "Application.Musics.Musics.GetWaitingMusicFieldBuilder.Doesn'tHave": "",
         "Application.Musics.Musics.GetWaitingMusicFieldBuilder.CurrentPageInfo": "",
-        "Application.Musics.Musics.Pause.Paused": "",
-        "Application.Musics.Musics.Pause.Unpaused": "",
-        "Application.Musics.Musics.Skipped": "",
-        "Application.Musics.Musics.CouldNotSkip": "",
-        "Application.Musics.Musics.ShuffleOn": "",
-        "Application.Musics.Musics.ShuffleOff": "",
-        "Application.Musics.Musics.Remove.Removed": "",
-        "Application.Musics.Musics.Remove.CouldNotRemove": "",
-        "Application.Musics.Musics.SetVolume": "",
-        "Application.Musics.Musics.SetDefaltVolume": "",
         "Application.Musics.Musics.InvalidVoiceChannelExecption": "",
-        "Application.Musics.Musics.InvalidYouTubeUrlExecption": "",
-        "Application.Musics.Queue.NormalMusicQueue.NormalMusicQueueName": "",
-        "Application.Musics.Queue.QueueLoopMusicQueue.QueueLoopMusicQueueName": "",
-        "Application.Musics.Queue.OneSongLoopMusicQueue.OneSongLoopMusicQueueName": ""
+        "Application.Musics.Musics.InvalidYouTubeUrlExecption": ""
     }
 }

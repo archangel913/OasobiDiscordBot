@@ -354,3 +354,4 @@ App.config
 VideoLib/
 opus.dll
 libsodium.dll
+ffmpeg.exe

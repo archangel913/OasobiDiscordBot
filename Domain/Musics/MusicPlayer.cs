@@ -1,21 +1,38 @@
 ﻿using Discord;
 using Domain.Interface;
 using Domain.Musics.Queue;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net;
 
 namespace Domain.Musics
 {
     public class MusicPlayer
     {
+        public MusicPlayer(IServiceProvider services, IVoiceChannel voiceChannel)
+        {
+            this.AudioSender = services.GetRequiredService<IAudioSender>();
+            this.VideoLib = services.GetRequiredService<IVideoLib>();
+            this.Logger = services.GetRequiredService<IDiscordLogger>();
+            this.MusicGetter = services.GetRequiredService<IGetMusic>();
+            this.Voicechannel = voiceChannel;
+            this.GuildName = voiceChannel.Guild.Name;
+            this.ChannelName = voiceChannel.Name;
+            this.VoiceChannelId = voiceChannel.Id;
+            this.MusicQueue = new MusicQueue(new NormalMusicQueueState());
+        }
+
         private IVoiceChannel Voicechannel { get; set; }
 
-        private IAudioSender AudioSender { get; } = Factory.Factory.GetService<IAudioSender>();
+        private IAudioSender AudioSender { get; }
 
         public MusicQueue MusicQueue { get; private set; }
 
-        private IVideoLib VideoLib { get; } = Factory.Factory.GetService<IVideoLib>();
+        private IVideoLib VideoLib { get; }
 
-        private IDiscordLogger Logger { get; } = Factory.Factory.GetService<IDiscordLogger>();
+        private IDiscordLogger Logger { get; }
+
+        private IGetMusic MusicGetter { get; }
 
         private Task? PlayTask { get; set; }
 
@@ -27,7 +44,13 @@ namespace Domain.Musics
 
         private bool IsExit { get; set; } = false;
 
-        private double Volume { get; set; } = 0.1;
+        private double CalculatedVolume { get; set; } = 0.1;
+
+        public int IntegerVolume { get; set; } = 20;
+
+        public IUserMessage? Controller { get; set; }
+
+        public int CurrentQueuePage { get; set; } = 1;
 
         public bool CanSkip { get; private set; } = false;
 
@@ -37,14 +60,11 @@ namespace Domain.Musics
 
         public ulong VoiceChannelId { get; }
 
-        public MusicPlayer(IVoiceChannel voiceChannel, QueueStateFactories factories)
+        public void AddCurrentQueuePage(int page)
         {
-            this.Voicechannel = voiceChannel;
-            this.GuildName = voiceChannel.Guild.Name;
-            this.ChannelName = voiceChannel.Name;
-            this.VoiceChannelId = voiceChannel.Id;
-            this.MusicQueue = new MusicQueue(factories);
+            this.CurrentQueuePage += page;
         }
+
         public async Task ConnecetAsync()
         {
             if (!AudioSender.IsConnect)
@@ -54,88 +74,81 @@ namespace Domain.Musics
         public async Task UpdateAsync(IVoiceChannel voiceChannel)
         {
             this.Voicechannel = voiceChannel;
-            await AudioSender.UpdateAsync(voiceChannel);
+            await AudioSender.UpdateAsync();
         }
 
         public void Disconnect()
         {
             this.CanLoad = false;
             this.IsExit = true;
-            if (this.PlayTask is null) throw new NullReferenceException("PlayTask is null in MusicPlayer");
+            if (this.PlayTask is null) return;
             this.PlayTask.Wait();
         }
 
-        public bool IsMatchVoiceChunnel(IGuildChannel voiceChannel)
+        public void Play(Func<IVoiceChannel, Task> func, Action<MusicPlayer> action)
         {
-            return this.Voicechannel.GuildId.Equals(voiceChannel.GuildId);
+            this.PlayTask ??= Task.Run(async () => await PlayAsync(func, action));
         }
 
-        public bool IsMatchVoiceChunnel(IEntity<ulong> voiceChannel)
-        {
-            return this.Voicechannel.Id.Equals(voiceChannel.Id);
-        }
+        /**
+         * 実際に曲を再生する＝play
+         * ではなく、
+         * キューに曲を追加する＝Playなのでは
+         * 
+         * 具体的な手段についてはドメイン層ではなくインフラ層送りでいいかもしれない
+         */
 
-        public void Play()
+        private async Task PlayAsync(Func<IVoiceChannel, Task> updateQueue, Action<MusicPlayer> deleteMusicPlayer)
         {
-            this.PlayTask ??= Task.Run(async () => await PlayAsync());
-        }
-
-        private async Task PlayAsync()
-        {
-            try
+            var now = MusicQueue.Dequeue();
+            while (now is not null && IsExit is false)
             {
-                var now = MusicQueue.Dequeue();
-                while (now is not null && IsExit is false)
+                var encoder = Encoder.VideoToWave();
+                _ = Task.Run(() => ReadInputStreamToEncoderAsync(now.Url, encoder.StandardInput.BaseStream));
+                var encodedStream = encoder.StandardOutput.BaseStream;
+                int blockSize = 3840;
+                byte[] buffer = new byte[blockSize];
+                int byteCount;
+                this.CanSkip = true;
+                this.Logger.WriteBotSystemLog(now.Title + " is playing in " + this.GuildName + "'s " + this.ChannelName);
+                while (((byteCount = encodedStream.Read(buffer, 0, blockSize)) > 0) && IsExit is false)
                 {
-                    var encoder = Encoder.VideoToWave();
-                    _ = Task.Run(() => ReadInputStreamToEncoderAsync(now.Url, encoder.StandardInput.BaseStream));
-                    var encodedStream = encoder.StandardOutput.BaseStream;
                     try
                     {
-                        int blockSize = 3840;
-                        byte[] buffer = new byte[blockSize];
-                        int byteCount;
-                        this.CanSkip = true;
-                        this.Logger.WriteBotSystemLog(now.Title + " is playing in " + this.GuildName + "'s " + this.ChannelName);
-                        while (((byteCount = encodedStream.Read(buffer, 0, blockSize)) > 0) && IsExit is false)
+                        CalcVolume(buffer, blockSize);
+                        if (byteCount < blockSize)
                         {
-                            CalcVolume(buffer, blockSize);
-                            if (byteCount < blockSize)
-                            {
-                                for (int i = byteCount; i < blockSize; i++)
-                                    buffer[i] = 0;
-                            }
-                            if (this.IsSkip)
-                            {
-                                this.IsSkip = false;
-                                break;
-                            }
-                            while (this.IsPause)
-                            {
-                                await Task.Delay(100);
-                            }
-                            await AudioSender.SendMusic(buffer, 0, blockSize);
+                            for (int i = byteCount; i < blockSize; i++)
+                                buffer[i] = 0;
                         }
+                        if (this.IsSkip)
+                        {
+                            this.IsSkip = false;
+                            break;
+                        }
+                        while (this.IsPause)
+                        {
+                            await Task.Delay(100);
+                        }
+                        await AudioSender.SendMusic(buffer, 0, blockSize);
                     }
                     catch (Exception e)
                     {
+                        await this.AudioSender.UpdateAsync();
+                        Console.WriteLine("at MusicPlayer line 140");
                         Console.WriteLine(e);
                     }
-                    finally
-                    {
-                        this.CanSkip = false;
-                        await AudioSender.FlushAsync();
-                        encoder.Dispose();
-                        encodedStream.Dispose();
-                    }
-                    now = MusicQueue.Dequeue();
                 }
+                this.CanSkip = false;
+                await AudioSender.FlushAsync();
+                encoder.Dispose();
+                encodedStream.Dispose();
+                now = MusicQueue.Dequeue();
+                await updateQueue(Voicechannel);
             }
-            finally
-            {
-                await this.AudioSender.DisconnectAsync();
-                MusicPlayerProvider.DeleteMusicPlayer(this);
-            }
+            await this.AudioSender.DisconnectAsync();
+            if (this.Controller is not null) await this.Controller.DeleteAsync();
+            deleteMusicPlayer(this);
         }
 
         private async Task ReadInputStreamToEncoderAsync(string url, Stream encoderInputStream)
@@ -156,9 +169,9 @@ namespace Domain.Musics
             }
             catch (Exception e)
             {
-                this.Logger.WriteBotSystemLog(e.Message + "\n==========StackTrace==========\n" + e.StackTrace, ConsoleColor.Red);
+                this.Logger.WriteErrorLog(e.Message + "\n==========StackTrace==========\n" + e.StackTrace);
                 if (e.InnerException is not null)
-                    this.Logger.WriteBotSystemLog(e.InnerException.Message + "\n==========InnerException StackTrace==========\n" + e.InnerException.StackTrace, ConsoleColor.Red);
+                    this.Logger.WriteErrorLog(e.InnerException.Message + "\n==========InnerException StackTrace==========\n" + e.InnerException.StackTrace);
             }
             finally
             {
@@ -168,7 +181,7 @@ namespace Domain.Musics
 
         public async Task<List<Music>> Add(string url)
         {
-            var musicList = await new MakeMusicList(url).GetMusicsAsync();
+            var musicList = await this.MusicGetter.GetMusicsAsync(url);
             for (int i = 0; i < musicList.Count; i++)
             {
                 this.MusicQueue.Enqueue(musicList[i]);
@@ -180,7 +193,11 @@ namespace Domain.Musics
 
         public bool TryRemoveAt(int index, out string deleteMusicName) => MusicQueue.TryRemoveAt(index, out deleteMusicName);
 
-        public void ChangeLoopState() => this.MusicQueue.ChangeLoopState();
+        public IQueueState ChangeLoopState()
+        {
+            this.MusicQueue.ChangeLoopState();
+            return this.MusicQueue.State;
+        }
 
         public Type GetLoopType() => MusicQueue.GetType();
 
@@ -200,10 +217,18 @@ namespace Domain.Musics
             this.IsSkip = true;
         }
 
-        public void SetVolume(double volume)
+        public void AdjustVolume(int volume)
         {
-            if (volume == 0) this.Volume = 0.1;
-            else this.Volume *= Math.Pow(10, volume / 100);
+            if (volume == 0)
+            {
+                this.CalculatedVolume = 0.1;
+                this.IntegerVolume = 20;
+            }
+            else
+            {
+                this.CalculatedVolume *= Math.Pow(10, (double)volume / 5);
+                this.IntegerVolume += volume;
+            }
         }
 
         private void CalcVolume(byte[] buffer, int blockSize)
@@ -213,9 +238,9 @@ namespace Domain.Musics
             {
                 tmp = buffer[i + 1];
                 tmp = (short)((tmp << 8) | buffer[i]);
-                if (((this.Volume * tmp) < 0) && (tmp > 0)) tmp = short.MaxValue;
-                else if (((this.Volume * tmp) > 0) && (tmp < 0)) tmp = short.MinValue;
-                else tmp = (short)(this.Volume * tmp);
+                if (((this.CalculatedVolume * tmp) < 0) && (tmp > 0)) tmp = short.MaxValue;
+                else if (((this.CalculatedVolume * tmp) > 0) && (tmp < 0)) tmp = short.MinValue;
+                else tmp = (short)(this.CalculatedVolume * tmp);
                 buffer[i] = (byte)tmp;
                 buffer[i + 1] = (byte)(tmp >> 8);
             }

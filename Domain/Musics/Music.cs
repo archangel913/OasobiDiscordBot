@@ -10,7 +10,7 @@ namespace Domain.Musics
     {
         public Music(string title, string url)
         {
-            if (!url.Contains("https://www.youtube.com/watch?v="))
+            if (!url.Contains("https://www.youtube.com/"))
             {
                 throw new ArgumentException("source is not youtube url in Music class.");
             }

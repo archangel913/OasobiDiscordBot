@@ -1,5 +1,4 @@
 ﻿using Application.Interface;
-using Domain.Factory;
 
 namespace Application.Settings
 {
@@ -13,8 +12,6 @@ namespace Application.Settings
 
         public string DiscordToken { get; init; }
 
-        public List<GuildId> GuildIds { get; init; } = new List<GuildId>();
-
-        public string YouTubeApiKey { get; init; }
+        public string YouTubeToken { get; init; }
     }
 }
