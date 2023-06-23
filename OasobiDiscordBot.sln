@@ -22,8 +22,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ソリューション項目
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientUI", "ClientUI\ClientUI.csproj", "{E960189F-2D7B-4DB5-8CAB-0DDF33CBFE87}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoLib", "..\実行用\VideoLib\VideoLib.csproj", "{1B5A214F-983C-4DC0-9748-EFC5C0AFDFDE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,10 +52,6 @@ Global
 		{E960189F-2D7B-4DB5-8CAB-0DDF33CBFE87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E960189F-2D7B-4DB5-8CAB-0DDF33CBFE87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E960189F-2D7B-4DB5-8CAB-0DDF33CBFE87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B5A214F-983C-4DC0-9748-EFC5C0AFDFDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B5A214F-983C-4DC0-9748-EFC5C0AFDFDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B5A214F-983C-4DC0-9748-EFC5C0AFDFDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B5A214F-983C-4DC0-9748-EFC5C0AFDFDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

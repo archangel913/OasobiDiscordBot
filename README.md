@@ -1,8 +1,6 @@
 # OasobiDiscordBot
 ## Overview
-Multi-function bot of discord for our server.
-
-In version 0.0.1, music player feature is implemented.
+music bot of discord for our server.
 
 ## music player
 
@@ -12,25 +10,7 @@ In version 0.0.1, music player feature is implemented.
 Not supported play from local files.
 
 ### Commands
-play : Play the music/play list.
-
-exit : Exit from the voice channel.
-
-queue : View the queue.
-
-pause : Stop music temporally.
-
-skip : Skip playing music.
-
-remove : Remove waiting music in queue.
-
-shuffle : Shuffle the queue.
-
-loop : Change loop settings.(normal, queue loop, single loop)
-
-volume : Change volume.
-
-[Demonstration movie(Japanese)](https://youtu.be/Xrl6I_8ZZJo)
+musicplayer: Send the control panel for the music player.
 
 ### Requirement
 .NET 6.0
@@ -62,10 +42,11 @@ add ffmpeg.exe to the environment path.
 2. Open the solution by Visual Studio 2022.
 3. Specify OasobiDiscordBot as the startup project.
 4. Build
-5. Edit OasobiDiscordBot.dll.config. Set BotToken and YouTubeApiToken.
-(GuildID will repeal. input any numbers. ex.1234)
-6. libsodium.dll and libopus.dll move folder with OasobiDiscordBot.exe and rename libopus.dll for opus.dll.
-7. Run!
+5. libsodium.dll and libopus.dll move folder with OasobiDiscordBot.exe and rename libopus.dll for opus.dll.
+6. Run!
+7. In settings tab, set discord token and YouTube API.
+
+note: Restart application when update settings.
 
 ## License
 OasobiDiscordBot is under the [MIT license](LICENSE)

@@ -5,13 +5,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>OasobiDiscordBot Domain Library</Title>
-    <Version>0.0.1</Version>
+    <Version>0.1.0</Version>
     <Authors>archangel913,AutumnSky1010</Authors>
-    <Copyright>Copyright ©2022 Archangel913,AutumnSky1010</Copyright>
+    <Copyright>Copyright ©2022-2023 Archangel913,AutumnSky1010</Copyright>
     <PackageProjectUrl>https://github.com/archangel913/OasobiDiscordBot/wiki</PackageProjectUrl>
     <RepositoryUrl>https://github.com/archangel913/OasobiDiscordBot</RepositoryUrl>
     <Product>OasobiDiscordBot</Product>
     <PackageId>$(AssemblyName)</PackageId>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
