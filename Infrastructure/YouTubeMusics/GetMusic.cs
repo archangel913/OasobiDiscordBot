@@ -125,6 +125,8 @@ namespace Infrastructure.YouTubeMusics
 
             public string CreateRequestVideoUrl(string url, string nextPageToken = "")
             {
+                // youtube musicの場合、music.を削除する
+                url = url.Replace("music.", "");
                 foreach (var pattern in Patterns)
                 {
                     string originalUrl = url;
@@ -135,11 +137,11 @@ namespace Infrastructure.YouTubeMusics
                 string request;
                 if (id.Length == this.VideoIdLength)
                 {
-                    request = this.BaseUrl + "videos" + "?" + this.Part + "&" + this.Id + id + "&" + this.Key;
+                    request = $"{this.BaseUrl}videos?{this.Part}&{this.Id}{id}&{this.Key}";
                 }
                 else
                 {
-                    request = this.BaseUrl + "playlistItems" + "?" + this.Part + "&" + this.PlaylistId + id + "&" + this.Key + "&maxResults=50";
+                    request = $"{this.BaseUrl}playlistItems?{this.Part}&{this.PlaylistId}{id}&{this.Key}&maxResults=50";
                     if (nextPageToken != "")
                     {
                         request += "&pageToken=" + nextPageToken;
