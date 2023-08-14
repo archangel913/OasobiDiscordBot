@@ -10,7 +10,7 @@
     "Application.Musics.Musics.GetWaitingMusicFieldBuilder.TitleOfIsNoWaiting": "再生待ち一覧",
     "Application.Musics.Musics.GetWaitingMusicFieldBuilder.Doesn'tHave": "ページ{0}に曲はありません。",
     "Application.Musics.Musics.GetWaitingMusicFieldBuilder.CurrentPageInfo": "\n\n現在のページ: {0}/{1}.",
-    "Application.Musics.Musics.InvalidVoiceChannelExecption": "コマンドを実行できませんでした。ボットと同じボイスチャンネルに参加してくだい。\nボットをボイスチャンネルに参加させるには、ボイスチャンネルに参加した後、\"musicplayer\"コマンドを実行してください。",
+    "Application.Musics.Musics.InvalidVoiceChannelExecption": "コマンドを実行できませんでした。ボットと同じボイスチャンネルに参加してください。\nボットをボイスチャンネルに参加させるには、ボイスチャンネルに参加した後、\"musicplayer\"コマンドを実行してください。",
     "Application.Musics.Musics.InvalidYouTubeUrlExecption": "YouTubeのURLが正しくありません。"
   }
 }
