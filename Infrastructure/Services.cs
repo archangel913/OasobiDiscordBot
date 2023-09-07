@@ -14,7 +14,7 @@ namespace Infrastructure
 {
     public class Services
     {
-        public IServiceProvider RegisterServices(IServiceCollection services, BotSettings settings, IEnumerable<Assembly> assemblies)
+        public void RegisterServices(IServiceCollection services, BotSettings settings, IEnumerable<Assembly> assemblies)
         {
             services.AddTransient<IFileRepository, FileRepository>();
             services.AddTransient<IAudioSender, AudioSender>();
@@ -40,7 +40,6 @@ namespace Infrastructure
             {
                 return bot;
             });
-            return services.BuildServiceProvider();
         }
     }
 }

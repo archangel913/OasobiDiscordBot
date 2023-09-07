@@ -18,9 +18,21 @@ namespace Infrastructure.Discord
 
         public async Task ConnectAsync(IVoiceChannel channel)
         {
-            this.VoiceChannel = channel;
-            this.Client = await channel.ConnectAsync();
-            AudioOutStream = Client.CreatePCMStream(AudioApplication.Music);
+            try
+            {
+                this.VoiceChannel = channel;
+                this.Client = await channel.ConnectAsync();
+                AudioOutStream = Client.CreatePCMStream(AudioApplication.Music);
+            }
+            catch(Exception e)
+            {
+                var r = new LocalFile.FileRepository();
+                r.WriteLogFile(@"Log/currentLog.txt",e.Message);
+                if (e.StackTrace is not null)
+                {
+                    r.WriteLogFile(@"Log/currentLog.txt", e.StackTrace);
+                }
+            }
         }
 
         public async Task UpdateAsync()
@@ -45,8 +57,20 @@ namespace Infrastructure.Discord
 
         public async Task SendMusic(byte[] buffer, int offset, int count)
         {
-            if (this.AudioOutStream is null) throw new NullReferenceException("AudioOutStream is null.");
-            await this.AudioOutStream.WriteAsync(buffer.AsMemory(offset, count));
+            try
+            {
+                if (this.AudioOutStream is null) throw new NullReferenceException("AudioOutStream is null.");
+                await this.AudioOutStream.WriteAsync(buffer.AsMemory(offset, count));
+            }
+            catch(Exception e)
+            {
+                var r = new LocalFile.FileRepository();
+                r.WriteLogFile(@"Log/currentLog.txt", e.Message);
+                if (e.StackTrace is not null)
+                {
+                    r.WriteLogFile(@"Log/currentLog.txt", e.StackTrace);
+                }
+            }
         }
 
         public async Task FlushAsync()

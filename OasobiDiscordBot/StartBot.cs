@@ -3,9 +3,12 @@ using Infrastructure.LocalFile;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Settings;
 using Infrastructure.Discord;
-using ClientUI;
 using DiscordUI;
 using System.Reflection;
+using Application.Bots;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace OasobiDiscordBot
 {
@@ -195,23 +198,43 @@ namespace OasobiDiscordBot
 
     internal class StartBot
     {
-        [STAThread]
-        public static void Main()
+        public static async Task Main(string[] args)
         {
             var settings = GetSettigs();
-            var services = InjectionServices(settings);
-            var app = new App(services);
-            app.Start();
+
+            var builder = new HostBuilder()
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddEnvironmentVariables();
+
+                    if (args != null)
+                    {
+                        config.AddCommandLine(args);
+                    }
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddOptions();
+                    services.Configure<DaemonConfig>(hostContext.Configuration.GetSection("Daemon"));
+
+                    services.AddSingleton<IHostedService, DaemonService>();
+                    InjectionServices(services, settings);
+                })
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddSystemdConsole();
+                });
+            await builder.RunConsoleAsync();
         }
 
-        private static IServiceProvider InjectionServices(BotSettings settings)
+        private static void InjectionServices(IServiceCollection services, BotSettings settings)
         {
-            var services = new ServiceCollection();
             var modules = new List<Assembly>()
             {
                 ModuleAssembly.Get()
             };
-            return new Infrastructure.Services().RegisterServices(services, settings, modules);
+            new Infrastructure.Services().RegisterServices(services, settings, modules);
         }
 
         private static BotSettings GetSettigs()

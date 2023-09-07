@@ -18,7 +18,7 @@ internal class DiscordLogger : IDiscordLogger
 
     private ILogPrintable? Printable { get; set; }
 
-    public void Register(DiscordSocketClient client, InteractionService interactionService, ILogPrintable printable)
+    public void Register(DiscordSocketClient client, InteractionService interactionService, ILogPrintable? printable)
     {
         this.Printable = printable;
         interactionService.SlashCommandExecuted += ShowCommandExecutedLog;

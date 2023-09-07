@@ -17,7 +17,7 @@ namespace Infrastructure.LocalFile
                 Directory.CreateDirectory(this.LangDirectoryPath);
             }
 
-            this.LangFilePath = $@"{this.LangDirectoryPath}\{settings.BotLanguage}.json";
+            this.LangFilePath = $@"{this.LangDirectoryPath}/{settings.BotLanguage}.json";
             if (!File.Exists(this.LangFilePath))
             {
                 throw new FileNotFoundException($"{this.LangFilePath} was not found.");

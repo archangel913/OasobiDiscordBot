@@ -33,7 +33,7 @@ public class BotClient : IAsyncBotClient
         this.InteractionService = new InteractionService(Client.Rest);
     }
 
-    public async Task StartAsync(ILogPrintable printable)
+    public async Task StartAsync(ILogPrintable? printable)
     {
         this.DiscordLogger.Register(this.Client, this.InteractionService, printable);
         this.DiscordLogger.WriteBotSystemLog("Application Name : " + Settings.BotName);
@@ -53,7 +53,7 @@ public class BotClient : IAsyncBotClient
         this.Client = this.GetInitializedClient();
     }
 
-    public async Task RestartAsync(ILogPrintable printable)
+    public async Task RestartAsync(ILogPrintable? printable)
     {
         await StopAsync();
         await StartAsync(printable);
