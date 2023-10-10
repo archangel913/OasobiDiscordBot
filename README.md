@@ -1,4 +1,9 @@
 # OasobiDiscordBot
+
+## Ubuntuの特殊環境用ブランチです。
+独自進化を遂げているため非推奨です。
+
+
 ## Overview
 music bot of discord for our server.
 
