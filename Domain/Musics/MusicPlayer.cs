@@ -20,6 +20,10 @@ namespace Domain.Musics
             this.ChannelName = voiceChannel.Name;
             this.VoiceChannelId = voiceChannel.Id;
             this.MusicQueue = new MusicQueue(new NormalMusicQueueState());
+            this.MemoryStream = new();
+            this.Semaphore = new(1, 1);
+            this.ReadOrigin = 0;
+            this.WriteOrigin = 0;
         }
 
         private IVoiceChannel Voicechannel { get; set; }
@@ -27,6 +31,14 @@ namespace Domain.Musics
         private IAudioSender AudioSender { get; }
 
         public MusicQueue MusicQueue { get; private set; }
+
+        private MemoryStream MemoryStream;
+
+        private SemaphoreSlim Semaphore;
+
+        private int ReadOrigin;
+
+        private int WriteOrigin;
 
         private IVideoLib VideoLib { get; }
 
@@ -107,30 +119,32 @@ namespace Domain.Musics
                 _ = Task.Run(() => ReadInputStreamToEncoderAsync(now.Url, encoder.StandardInput.BaseStream));
                 var encodedStream = encoder.StandardOutput.BaseStream;
                 int blockSize = 3840;
-                byte[] buffer = new byte[blockSize];
-                int byteCount;
                 this.CanSkip = true;
                 this.Logger.WriteBotSystemLog(now.Title + " is playing in " + this.GuildName + "'s " + this.ChannelName);
-                while (((byteCount = encodedStream.Read(buffer, 0, blockSize)) > 0) && IsExit is false)
+
+                while (IsExit is false)
                 {
                     try
                     {
-                        CalcVolume(buffer, blockSize);
-                        if (byteCount < blockSize)
+                        byte[] buffer = new byte[blockSize];
+                        while (encodedStream.Read(buffer,0,blockSize) != 0)
                         {
-                            for (int i = byteCount; i < blockSize; i++)
-                                buffer[i] = 0;
+                            if (buffer.Length == 0)
+                            {
+                                break;
+                            }
+                            CalcVolume(buffer, blockSize);
+                            if (this.IsSkip)
+                            {
+                                this.IsSkip = false;
+                                break;
+                            }
+                            while (this.IsPause)
+                            {
+                                await Task.Delay(100);
+                            }
+                            await AudioSender.SendMusic(buffer, 0, blockSize);
                         }
-                        if (this.IsSkip)
-                        {
-                            this.IsSkip = false;
-                            break;
-                        }
-                        while (this.IsPause)
-                        {
-                            await Task.Delay(100);
-                        }
-                        await AudioSender.SendMusic(buffer, 0, blockSize);
                     }
                     catch (Exception e)
                     {

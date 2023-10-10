@@ -131,6 +131,7 @@ namespace Infrastructure.YouTubeMusics
                 {
                     string originalUrl = url;
                     url = url.Replace(pattern, "");
+                    url = Regex.Replace(url ,".si=.*", "");
                     if (url != originalUrl) { break; }
                 }
                 var id = url.Split("&")[0];
