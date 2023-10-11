@@ -10,7 +10,7 @@ namespace Domain.Musics
             return Process.Start(new ProcessStartInfo
             {
                 FileName = @"ffmpeg",
-                Arguments = $"-loglevel debug -i pipe:0 -vn -f s16le -ar 48000 -ac 2 pipe:1.wav",
+                Arguments = $"-loglevel panic -i pipe:0 -vn -f s16le -ar 48000 -ac 2 pipe:1.wav",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardInput = true,

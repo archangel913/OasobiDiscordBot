@@ -102,7 +102,7 @@ namespace Domain.Musics
             this.PlayTask ??= Task.Run(async () => await PlayAsync(func, action));
         }
 
-        /**
+        /* TODO
          * 実際に曲を再生する＝play
          * ではなく、
          * キューに曲を追加する＝Playなのでは
@@ -122,36 +122,41 @@ namespace Domain.Musics
                 this.CanSkip = true;
                 this.Logger.WriteBotSystemLog(now.Title + " is playing in " + this.GuildName + "'s " + this.ChannelName);
 
-                while (IsExit is false)
+                var memoryStream = Stream.Synchronized(new MemoryStream());
+
+                // エンコード待機時間を許容する（苦肉の策）
+                // 物理メモリが少ないならtmp.wavとしてファイル出力も考える。
+                // TODO スレッドセーフで高速な自作MemoryStreamの作成
+                encodedStream.CopyTo(memoryStream);
+
+                try
                 {
-                    try
+                    byte[] buffer = new byte[blockSize];
+                    memoryStream.Position = 0;
+                    while (memoryStream.Read(buffer, 0, blockSize) != 0 && IsExit is false)
                     {
-                        byte[] buffer = new byte[blockSize];
-                        while (encodedStream.Read(buffer,0,blockSize) != 0)
+                        if (buffer.Length == 0)
                         {
-                            if (buffer.Length == 0)
-                            {
-                                break;
-                            }
-                            CalcVolume(buffer, blockSize);
-                            if (this.IsSkip)
-                            {
-                                this.IsSkip = false;
-                                break;
-                            }
-                            while (this.IsPause)
-                            {
-                                await Task.Delay(100);
-                            }
-                            await AudioSender.SendMusic(buffer, 0, blockSize);
+                            break;
                         }
+                        CalcVolume(buffer, blockSize);
+                        if (this.IsSkip)
+                        {
+                            this.IsSkip = false;
+                            break;
+                        }
+                        while (this.IsPause)
+                        {
+                            await Task.Delay(100);
+                        }
+                        await AudioSender.SendMusic(buffer, 0, blockSize);
                     }
-                    catch (Exception e)
-                    {
-                        await this.AudioSender.UpdateAsync();
-                        Console.WriteLine("at MusicPlayer line 140");
-                        Console.WriteLine(e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    await this.AudioSender.UpdateAsync();
+                    Console.WriteLine("at MusicPlayer line 140");
+                    Console.WriteLine(e);
                 }
                 this.CanSkip = false;
                 await AudioSender.FlushAsync();
@@ -160,7 +165,7 @@ namespace Domain.Musics
                 now = MusicQueue.Dequeue();
                 await updateQueue(Voicechannel);
             }
-            await this.AudioSender.DisconnectAsync();
+            _ = this.AudioSender.DisconnectAsync();
             if (this.Controller is not null) await this.Controller.DeleteAsync();
             deleteMusicPlayer(this);
         }
