@@ -122,18 +122,26 @@ namespace Domain.Musics
                 this.CanSkip = true;
                 this.Logger.WriteBotSystemLog(now.Title + " is playing in " + this.GuildName + "'s " + this.ChannelName);
 
-                var memoryStream = Stream.Synchronized(new MemoryStream());
-
-                // エンコード待機時間を許容する（苦肉の策）
-                // 物理メモリが少ないならtmp.wavとしてファイル出力も考える。
-                // TODO スレッドセーフで高速な自作MemoryStreamの作成
-                encodedStream.CopyTo(memoryStream);
+                var memoryStream = new MemoryStreamWrapper();
+                
+                _ = Task.Run(() =>
+                {
+                    byte[] buffer = new byte[blockSize];
+                    while (true)
+                    {
+                        var num = encodedStream.Read(buffer, 0, blockSize);
+                        if (num == 0) break;
+                        // Writeの際必ず読み込んだバイト数（このスコープではnum）をcountに使うこと
+                        // blockSizeフルで読み込めないことがある
+                        memoryStream.Write(buffer, 0, num);
+                    }
+                    memoryStream.WriteFinish();
+                });
 
                 try
                 {
                     byte[] buffer = new byte[blockSize];
-                    memoryStream.Position = 0;
-                    while (memoryStream.Read(buffer, 0, blockSize) != 0 && IsExit is false)
+                    while (memoryStream.Read(buffer, 0 ,blockSize) != 0 && IsExit is false)
                     {
                         if (buffer.Length == 0)
                         {
@@ -149,6 +157,11 @@ namespace Domain.Musics
                         {
                             await Task.Delay(100);
                         }
+                        if (buffer[0] != 0)
+                        {
+                            await Task.Delay(0);
+                        }
+                            
                         await AudioSender.SendMusic(buffer, 0, blockSize);
                     }
                 }
