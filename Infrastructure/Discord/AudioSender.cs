@@ -38,10 +38,6 @@ namespace Infrastructure.Discord
         public async Task UpdateAsync()
         {
             if (this.VoiceChannel is null) throw new NullReferenceException("channel is null.");
-            if (this.Client is null) throw new NullReferenceException("Client is null.");
-            if (this.AudioOutStream is null) throw new NullReferenceException("AudioOutStream is null.");
-            this.AudioOutStream.Close();
-            this.Client.Dispose();
             this.Client = await this.VoiceChannel.ConnectAsync();
             this.AudioOutStream = this.Client.CreatePCMStream(AudioApplication.Music);
         }
@@ -70,6 +66,7 @@ namespace Infrastructure.Discord
                 {
                     r.WriteLogFile(@"Log/currentLog.txt", e.StackTrace);
                 }
+                await this.UpdateAsync();
             }
         }
 
