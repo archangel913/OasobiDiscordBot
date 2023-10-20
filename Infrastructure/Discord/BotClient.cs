@@ -81,7 +81,6 @@ public class BotClient : IAsyncBotClient
 
     private async Task RegisterCommands()
     {
-        await this.InteractionService.RegisterCommandsToGuildAsync(1019297738640330803);
         await this.InteractionService.RegisterCommandsGloballyAsync();
     }
 
